@@ -16,6 +16,14 @@ class Level:
     def insertSpaces(self,filePath):
         numOfChars_width = int(self.levelWidth/self.tileWidth)
         numOfChars_height = int(self.levelHeight/self.tileHeight)
+        file = list(open(filePath),'w')
+        lineCounter = 0
+        charCounter = 0
+        for line in file:
+            charCounter = 0
+            for char in line:
+                charCounter+=1
+        lineCounter+=1
 
     def loadFile(self,filePath):
         print("loading file: %s"%(filePath))
