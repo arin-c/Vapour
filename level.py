@@ -23,6 +23,8 @@ class Level:
             charCounter = 0
             for char in line:
                 charCounter+=1
+            if(charCounter <= numOfChars_width):
+                charCounter = charCounter
         lineCounter+=1
 
     def loadFile(self,filePath):
