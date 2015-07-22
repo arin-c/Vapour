@@ -5,18 +5,23 @@ class Level:
         self.tileWidth, self.tileHeight = 20, 20
         self.blockList = list()
         self.gridList = list()
-        self.filePath = self.loadFile(filePath)
         self.levelWidth = levelWidth
         self.levelHeight = levelHeight
         self.surface = surface
+        self.filePath = self.loadFile(filePath)
 
     def setSurface(self,surface):
         self.surface = surface
+
+    def insertSpaces(self,filePath):
+        numOfChars_width = int(self.levelWidth/self.tileWidth)
+        numOfChars_height = int(self.levelHeight/self.tileHeight)
 
     def loadFile(self,filePath):
         print("loading file: %s"%(filePath))
         self.blockList = list()
         file = list(open(filePath))
+        self.insertSpaces(filePath)
         lineCounter = 0
         charCounter = 0
         for line in file:
@@ -36,4 +41,3 @@ class Level:
             surface = self.surface
         for tile in self.blockList:
             pygame.draw.rect(self.surface,(100,100,200),(tile[0],tile[1],tile[2],tile[3]))
-            
