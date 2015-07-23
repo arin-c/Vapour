@@ -17,6 +17,7 @@ while(not quit):
         if(e.type == pygame.QUIT):
             quit = True
     
+    lEditor.update()
     screen.fill(0)
     lEditor.draw()
     pygame.display.flip()
