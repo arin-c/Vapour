@@ -18,6 +18,7 @@ class LevelEditor:
         self.level.draw()
         if(self.grid):
             self.drawGrid()
+        self.drawUI()
 
     def getLevel(self):
         return self.level
@@ -49,3 +50,11 @@ class LevelEditor:
             self.level.blockList.append((self.gridMouseX*self.level.tileWidth,self.gridMouseY*self.level.tileHeight,self.level.tileWidth,self.level.tileHeight,self.currentBID))
             print("mouse was pressed")
 
+    def drawUI(self):
+        startX,startY,uiW,uiH = (0,screen_height-85,screen_width,85)
+        pygame.draw.rect(self.surface,(30,30,30),(startX,startY,uiW,uiH))
+        pygame.draw.rect(self.surface,(200,0,0),(startX+5,startY+5,35,35))
+        pygame.draw.rect(self.surface,(0,200,0),(startX+45,startY+5,35,35))
+        pygame.draw.rect(self.surface,(0,0,200),(startX+85,startY+5,35,35))
+        pygame.draw.rect(self.surface,(200,200,0),(startX+125,startY+5,35,35))
+        pygame.draw.rect(self.surface,(200,0,200),(startX+5,startY+45,35,35))
