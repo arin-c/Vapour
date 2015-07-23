@@ -12,6 +12,7 @@ class LevelEditor:
         self.grid = True
         self.mouseX, self.mouseY = (0,0)
         self.gridMouseX,self.gridMouseY = (-1,-1)
+        self.currentBID = '#'
 
     def draw(self):
         self.level.draw()
@@ -43,3 +44,8 @@ class LevelEditor:
     def update(self):
         self.mouseX,self.mouseY = pygame.mouse.get_pos()
         self.updateGrid()
+        if(pygame.mouse.get_pressed()[0]):
+            self.level.gridList[self.gridMouseY][self.gridMouseX] = self.currentBID
+            self.level.blockList.append((self.gridMouseX*self.level.tileWidth,self.gridMouseY*self.level.tileHeight,self.level.tileWidth,self.level.tileHeight,self.currentBID))
+            print("mouse was pressed")
+
