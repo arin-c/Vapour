@@ -21,3 +21,4 @@ while(not quit):
     screen.fill(0)
     lEditor.draw()
     pygame.display.flip()
+lEditor.getLevel().save('2sweg.txt')
