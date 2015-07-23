@@ -11,7 +11,7 @@ class LevelEditor:
             self.level.setSurface(self.surface)
         self.grid = True
         self.mouseX, self.mouseY = (0,0)
-        self.gridMouseX,self.gridMouseY = (0,0)
+        self.gridMouseX,self.gridMouseY = (-1,-1)
 
     def draw(self):
         self.level.draw()
@@ -26,10 +26,20 @@ class LevelEditor:
 
     def drawGrid(self):
         if(self.grid):
+            gridColor = (100,0,0)
             for x in range(int(screen_width/self.level.tileWidth)):
-                pygame.draw.line(self.surface,(0,255,0),(x*self.level.tileWidth,0),(x*self.level.tileWidth,screen_height))
+                pygame.draw.line(self.surface,gridColor,(x*self.level.tileWidth,0),(x*self.level.tileWidth,screen_height))
             for y in range(int(screen_height/self.level.tileHeight)):
-                pygame.draw.line(self.surface,(0,255,0),(0,y*self.level.tileHeight),(screen_width,y*self.level.tileHeight))
+                pygame.draw.line(self.surface,gridColor,(0,y*self.level.tileHeight),(screen_width,y*self.level.tileHeight))
+            pygame.draw.rect(self.surface,gridColor,(self.gridMouseX*self.level.tileWidth,self.gridMouseY*self.level.tileHeight,self.level.tileWidth,self.level.tileHeight))
+
+    def updateGrid(self):
+        if(self.grid):
+            mx = self.mouseX - (self.mouseX%self.level.tileWidth)  #round mouseX to a multiple of level tileWidth
+            my = self.mouseY - (self.mouseY%self.level.tileHeight) #round mouseY to a multiple of level tileHeight
+            self.gridMouseX = mx/self.level.tileWidth
+            self.gridMouseY = my/self.level.tileHeight
 
     def update(self):
         self.mouseX,self.mouseY = pygame.mouse.get_pos()
+        self.updateGrid()
