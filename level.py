@@ -52,7 +52,6 @@ class Level:
                     self.gridList[lineCounter].append(char)
                 charCounter+=1
             lineCounter+=1
-        #self.gridList.pop()
         print(self.gridList)
         self.insertSpaces(filePath)
 
