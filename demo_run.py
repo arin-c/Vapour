@@ -6,7 +6,7 @@ screen = pygame.display.set_mode((screen_width,screen_height))
 lEditor = levelEditor.LevelEditor(screen)
 print("created level editor")
 quit = False
-
+pygame.display.set_caption("Vapour")
 while(not quit):
     pygame.time.Clock().tick(30)
 
