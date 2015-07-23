@@ -17,22 +17,29 @@ class Level:
     def insertSpaces(self,filePath):
         numOfChars_width = int(self.levelWidth/self.tileWidth)
         numOfChars_height = int(self.levelHeight/self.tileHeight)
-        file = list(open(filePath,'r'))
-        lineCounter = 0
         charCounter = 0
-        for line in file:
+        lineCounter = 0
+        for row in self.gridList:
             charCounter = 0
-            for char in line:
+            for char in row:
                 charCounter+=1
-            if(charCounter <= numOfChars_width):
-                charCounter = charCounter
-        lineCounter+=1
+            if(charCounter < numOfChars_width):
+                spacesToAdd = numOfChars_width-charCounter
+                for i in range(spacesToAdd-1):
+                    self.gridList[lineCounter].append(' ')
+            lineCounter+=1
+        if(lineCounter < numOfChars_height):
+            spacesToAdd = numOfChars_height-lineCounter
+            for j in range(spacesToAdd):
+                self.gridList.append(list())
+                for k in range(numOfChars_width-1):
+                    self.gridList[lineCounter].append(' ')
+                lineCounter+=1
 
     def load(self,filePath):
         print("loading file: %s"%(filePath))
         self.blockList = list()
         file = list(open(filePath))
-        self.insertSpaces(filePath)
         lineCounter = 0
         charCounter = 0
         for line in file:
@@ -45,7 +52,9 @@ class Level:
                     self.gridList[lineCounter].append(char)
                 charCounter+=1
             lineCounter+=1
+        #self.gridList.pop()
         print(self.gridList)
+        self.insertSpaces(filePath)
 
     def save(self,filePath):
         saveFile = open(filePath,'w')
