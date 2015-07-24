@@ -26,6 +26,8 @@ class Player():
         direction = direction.upper()
         if((direction == "UP" or direction == "JUMP") and not self.doubleJump and self.checkSpace(self.x,self.y-self.velY,direction)[0]):
             self.jump = True
+        elif(direction == "UP" or direction == "JUMP"):
+            self.y -= self.checkSpace(self.x,self.y-self.velY,direction)[1]
 
         if(direction == "LEFT" and self.checkSpace(self.x-self.velX,self.y,direction)[0]):
             self.x -= self.velX
@@ -46,6 +48,7 @@ class Player():
                 self.y-=self.velY
             else:
                 self.y -= self.checkSpace(self.x,self.y-self.velY,"UP")[1]
+                self.velY = 1
             self.velY-=1
             if(self.velY <= 0):
                 self.jump = False
@@ -64,7 +67,7 @@ class Player():
         gap = 0
         for block in self.level.blockList:
             if(not(block[y] >= py+self.cHeight or block[y]+block[h] <= py or block[x]+block[w] <= px or block[x] >= px+self.cWidth) and (block[bID] == '#' or block[bID] == '4' or block[bID] == '3' or block[bID] == '2' or block[bID] == '1' or block[bID] == '0')):
-                if(direction == "UP"):
+                if(direction == "UP" or direction == "JUMP"):
                     gap = self.y-(block[y]+block[h])
                 elif(direction == "DOWN"):
                     gap = block[y]-(self.y+self.cHeight)
