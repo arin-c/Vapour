@@ -4,7 +4,8 @@ pygame.init()
 screen_width, screen_height = 500,500
 screen = pygame.display.set_mode((screen_width,screen_height))
 lEditor = levelEditor.LevelEditor(screen)
-player = player.Player(50,50,screen)
+player = player.Player(100,50,screen)
+player.setLevel(lEditor.getLevel())
 quit = False
 
 def handleEvents():
@@ -12,6 +13,8 @@ def handleEvents():
         if(e.type == pygame.KEYDOWN):
             if(e.key == pygame.K_ESCAPE):
                 return True
+            elif(e.key == pygame.K_UP):
+                player.move("JUMP")
         if(e.type == pygame.QUIT):
             return True
     key = pygame.key.get_pressed()
@@ -23,7 +26,6 @@ def handleEvents():
 
 while(not quit):
     pygame.time.Clock().tick(30)
-
     quit = handleEvents()
     lEditor.update()
     screen.fill(0)
