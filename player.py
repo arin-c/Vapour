@@ -26,6 +26,7 @@ class Player():
         direction = direction.upper()
         if((direction == "UP" or direction == "JUMP") and not self.doubleJump and self.checkSpace(self.x,self.y-self.velY,direction)[0]):
             self.jump = True
+            self.velY = 16
         elif(direction == "UP" or direction == "JUMP"):
             self.y -= self.checkSpace(self.x,self.y-self.velY,direction)[1]
 
