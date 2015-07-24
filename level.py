@@ -69,3 +69,15 @@ class Level:
             if(tile[4] == '#'): #if charID is # then draw red square
                 pygame.draw.rect(self.surface,(180,30,30),(tile[0],tile[1],tile[2],tile[3]))
                 pygame.draw.rect(self.surface,(250,30,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+            elif(tile[4] == '$'):
+                pygame.draw.rect(self.surface,(30,180,30),(tile[0],tile[1],tile[2],tile[3]))
+                pygame.draw.rect(self.surface,(30,250,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+            elif(tile[4] == '@'):
+                pygame.draw.rect(self.surface,(30,30,180),(tile[0],tile[1],tile[2],tile[3]))
+                pygame.draw.rect(self.surface,(30,30,250),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+            elif(tile[4] == '!'):
+                pygame.draw.rect(self.surface,(180,180,30),(tile[0],tile[1],tile[2],tile[3]))
+                pygame.draw.rect(self.surface,(250,250,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+            elif(tile[4] == '%'):
+                pygame.draw.rect(self.surface,(180,30,180),(tile[0],tile[1],tile[2],tile[3]))
+                pygame.draw.rect(self.surface,(250,30,250),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
