@@ -7,16 +7,24 @@ lEditor = levelEditor.LevelEditor(screen)
 player = player.Player(50,50,screen)
 quit = False
 
-while(not quit):
-    pygame.time.Clock().tick(30)
-
+def handleEvents():
     for e in pygame.event.get():
         if(e.type == pygame.KEYDOWN):
             if(e.key == pygame.K_ESCAPE):
-                quit = True
+                return True
         if(e.type == pygame.QUIT):
-            quit = True
-    
+            return True
+    key = pygame.key.get_pressed()
+    if(key[pygame.K_LEFT]):
+        player.move("LEFT")
+    elif(key[pygame.K_RIGHT]):
+        player.move("RIGHT")
+    return False
+
+while(not quit):
+    pygame.time.Clock().tick(30)
+
+    quit = handleEvents()
     lEditor.update()
     screen.fill(0)
     lEditor.draw()
