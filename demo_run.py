@@ -6,6 +6,7 @@ screen = pygame.display.set_mode((screen_width,screen_height))
 lEditor = levelEditor.LevelEditor(screen)
 player = player.Player(100,50,screen)
 player.setLevel(lEditor.getLevel())
+pygame.display.set_caption("Vapour")
 quit = False
 
 def handleEvents():
@@ -28,6 +29,7 @@ while(not quit):
     pygame.time.Clock().tick(30)
     quit = handleEvents()
     lEditor.update()
+    player.update()
     screen.fill(0)
     lEditor.draw()
     player.draw()
