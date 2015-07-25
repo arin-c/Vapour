@@ -6,8 +6,8 @@ class Level:
         self.camera = passed_camera
         self.blockList = list()
         self.gridList = list()
-        self.levelWidth = levelWidth
-        self.levelHeight = levelHeight
+        self.width = levelWidth
+        self.height = levelHeight
         self.surface = surface
         self.filePath = self.load(filePath)
         self.save("2sweg.txt")
@@ -16,8 +16,8 @@ class Level:
         self.surface = surface
 
     def insertSpaces(self,filePath):
-        numOfChars_width = int(self.levelWidth/self.tileWidth)
-        numOfChars_height = int(self.levelHeight/self.tileHeight)
+        numOfChars_width = int(self.width/self.tileWidth)
+        numOfChars_height = int(self.height/self.tileHeight)
         charCounter = 0
         lineCounter = 0
         for row in self.gridList:
