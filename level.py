@@ -1,8 +1,9 @@
-import os, sys, pygame
+import os, sys, pygame,camera
 
 class Level:
-    def __init__(self,filePath,levelWidth,levelHeight,surface):
+    def __init__(self,filePath,levelWidth,levelHeight,passed_camera,surface):
         self.tileWidth, self.tileHeight = 20, 20
+        self.camera = passed_camera
         self.blockList = list()
         self.gridList = list()
         self.levelWidth = levelWidth
@@ -52,7 +53,6 @@ class Level:
                     self.gridList[lineCounter].append(char)
                 charCounter+=1
             lineCounter+=1
-        print(self.gridList)
         self.insertSpaces(filePath)
 
     def save(self,filePath):
@@ -62,22 +62,25 @@ class Level:
                 saveFile.write(char)
             saveFile.write("\n")
 
+    def drawRect(self,color,rect):
+        pygame.draw.rect(self.surface,color,((rect[0]+self.camera.x)*self.camera.zoom,(rect[1]+self.camera.y)*self.camera.zoom,rect[2]*self.camera.zoom,rect[3]*self.camera.zoom))
+
     def draw(self,surface = None):
         if(surface is None):
             surface = self.surface
         for tile in self.blockList:
             if(tile[4] == '#'): #if charID is # then draw red square
-                pygame.draw.rect(self.surface,(180,30,30),(tile[0],tile[1],tile[2],tile[3]))
-                pygame.draw.rect(self.surface,(250,30,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.drawRect((180,30,30),(tile[0],tile[1],tile[2],tile[3]))
+                self.drawRect((250,30,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
             elif(tile[4] == '$'):
-                pygame.draw.rect(self.surface,(30,180,30),(tile[0],tile[1],tile[2],tile[3]))
-                pygame.draw.rect(self.surface,(30,250,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.drawRect((30,180,30),(tile[0],tile[1],tile[2],tile[3]))
+                self.drawRect((30,250,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
             elif(tile[4] == '@'):
-                pygame.draw.rect(self.surface,(30,30,180),(tile[0],tile[1],tile[2],tile[3]))
-                pygame.draw.rect(self.surface,(30,30,250),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.drawRect((30,30,180),(tile[0],tile[1],tile[2],tile[3]))
+                self.drawRect((30,30,250),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
             elif(tile[4] == '!'):
-                pygame.draw.rect(self.surface,(180,180,30),(tile[0],tile[1],tile[2],tile[3]))
-                pygame.draw.rect(self.surface,(250,250,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.drawRect((180,180,30),(tile[0],tile[1],tile[2],tile[3]))
+                self.drawRect((250,250,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
             elif(tile[4] == '%'):
-                pygame.draw.rect(self.surface,(180,30,180),(tile[0],tile[1],tile[2],tile[3]))
-                pygame.draw.rect(self.surface,(250,30,250),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.drawRect((180,30,180),(tile[0],tile[1],tile[2],tile[3]))
+                self.drawRect((250,30,250),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
