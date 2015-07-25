@@ -1,9 +1,11 @@
-import os,sys,pygame
+import os,sys,pygame,camera
 
 class Player():
-    def __init__(self,startX,startY,surface):
-        self.x = startX
-        self.y = startY
+    def __init__(self,startX,startY,passed_camera,surface,rootFolder):
+        self.x = self.startX = startX
+        self.y = self.startY = startY
+        self.camera = passed_camera
+        print(passed_camera)
         self.velX = 16
         self.velY = 16
         self.cWidth = 50
@@ -15,6 +17,35 @@ class Player():
         self.doubleJump = False
         self.surface = surface
         self.fall = False
+        self.rootFolder = rootFolder
+        self.loadSprites()
+
+    def loadSprites(self):
+        self.sprite_still = self.addAnimation(self.rootFolder+"/STILL",self.sWidth,self.sHeight)
+
+    def addAnimation(self,rootFolder,width,height,flip = (False,False)):
+        if(rootFolder.endswith('/')):
+            rootFolder = rootFolder[:-1]
+        if(os.path.isdir(rootFolder)):
+            temp = []
+            indexCounter = 0
+            for stillImage in os.listdir(rootFolder):
+                indexCounter+=1
+                if(os.path.isfile(rootFolder+"/"+str(indexCounter)+".gif")):
+                    temp.append(pygame.transform.flip(pygame.transform.scale(pygame.image.load(rootFolder+"/"+str(indexCounter)+".gif"),(int(width*self.camera.zoom),int(height*self.camera.zoom))),flip[0],flip[1]))
+                elif(os.path.isfile(rootFolder+"/"+str(indexCounter)+".png")):
+                    temp.append(pygame.transform.flip(pygame.transform.scale(pygame.image.load(rootFolder+"/"+str(indexCounter)+".png"),(int(width*self.camera.zoom),int(height*self.camera.zoom))),flip[0],flip[1]))
+                elif(os.path.isfile(rootFolder+"/"+str(indexCounter)+".jpg")):
+                    temp.append(pygame.transform.flip(pygame.transform.scale(pygame.image.load(rootFolder+"/"+str(indexCounter)+".jpg"),(int(width*self.camera.zoom),int(height*self.camera.zoom))),flip[0],flip[1]))
+                elif(os.path.isfile(rootFolder+"/"+str(indexCounter)+".jpeg")):
+                    temp.append(pygame.transform.flip(pygame.transform.scale(pygame.image.load(rootFolder+"/"+str(indexCounter)+".jpeg"),(int(width*self.camera.zoom),int(height*self.camera.zoom))),flip[0],flip[1]))
+                else:
+                    break
+            print(temp)
+            return temp
+        else:
+            print("not a valid directory: " + rootFolder)
+            return None
 
     def setSurface(self,surface):
         self.surface = surface
@@ -41,7 +72,7 @@ class Player():
             self.x += self.checkSpace(self.x+self.velX,self.y,"RIGHT")[1]
 
     def draw(self):
-        pygame.draw.rect(self.surface,(0,0,255),(self.x,self.y,self.cWidth,self.cHeight))
+        pygame.draw.rect(self.surface,(0,0,255),(self.x+self.camera.x,self.y+self.camera.y,self.cWidth,self.cHeight))
 
     def update(self):
         if(self.jump):
