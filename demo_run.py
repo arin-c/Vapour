@@ -17,6 +17,8 @@ def handleEvents():
                 return True
             elif(e.key == pygame.K_UP):
                 player.move("JUMP")
+            elif(e.key == pygame.K_g):
+                lEditor.grid = not(lEditor.grid)
         if(e.type == pygame.QUIT):
             return True
     key = pygame.key.get_pressed()
