@@ -16,6 +16,9 @@ class Level:
     def setSurface(self,surface):
         self.surface = surface
 
+    def setBackground(self,background):
+        self.background = background
+
     def loadSprites(self):
         self.sprite_grass_TL = pygame.transform.scale(pygame.image.load("images/tiles/Grass_TL.png"),(self.tileWidth,self.tileHeight))
         self.sprite_grass_TM = pygame.transform.scale(pygame.image.load("images/tiles/Grass_TM.png"),(self.tileWidth,self.tileHeight))
@@ -79,12 +82,16 @@ class Level:
             surface = self.surface
         for tile in self.blockList:
             if(tile[4] == '#'):
-                self.surface.blit(self.sprite_grass_Centre,(tile[0]+self.camera.x,tile[1]+self.camera.y))
+                surface.blit(self.sprite_grass_Centre,(tile[0]+self.camera.x,tile[1]+self.camera.y))
             elif(tile[4] == '$'):
-                self.surface.blit(self.sprite_grass_TM,(tile[0]+self.camera.x,tile[1]+self.camera.y))
+                surface.blit(self.sprite_grass_TM,(tile[0]+self.camera.x,tile[1]+self.camera.y))
             elif(tile[4] == '@'):
-                self.surface.blit(self.sprite_grass_TL,(tile[0]+self.camera.x,tile[1]+self.camera.y))
+                surface.blit(self.sprite_grass_TL,(tile[0]+self.camera.x,tile[1]+self.camera.y))
             elif(tile[4] == '!'):
-                self.surface.blit(self.sprite_grass_TR,(tile[0]+self.camera.x,tile[1]+self.camera.y))
+                surface.blit(self.sprite_grass_TR,(tile[0]+self.camera.x,tile[1]+self.camera.y))
             elif(tile[4] == '%'):
-                self.surface.blit(self.sprite_grass_L,(tile[0]+self.camera.x,tile[1]+self.camera.y))
+                surface.blit(self.sprite_grass_L,(tile[0]+self.camera.x,tile[1]+self.camera.y))
+            elif(tile[4] == '^'):
+                surface.blit(self.sprite_grass_R,(tile[0]+self.camera.x,tile[1]+self.camera.y))
+            elif(tile[4] == ' '):
+                pygame.draw.rect(self.surface,(255,255,255),((tile[0]+self.camera.x)*self.camera.zoom,(tile[1]+self.camera.y)*self.camera.zoom,tile[2]*self.camera.zoom,tile[3]*self.camera.zoom))
