@@ -2,7 +2,7 @@ import os, sys, pygame,camera
 
 class Level:
     def __init__(self,filePath,levelWidth,levelHeight,passed_camera,surface):
-        self.tileWidth, self.tileHeight = 20, 20
+        self.tileWidth, self.tileHeight = 25, 25
         self.camera = passed_camera
         self.blockList = list()
         self.gridList = list()
@@ -11,9 +11,18 @@ class Level:
         self.surface = surface
         self.filePath = self.load(filePath)
         self.save("2sweg.txt")
+        self.loadSprites()
 
     def setSurface(self,surface):
         self.surface = surface
+
+    def loadSprites(self):
+        self.sprite_grass_TL = pygame.transform.scale(pygame.image.load("images/tiles/Grass_TL.png"),(self.tileWidth,self.tileHeight))
+        self.sprite_grass_TM = pygame.transform.scale(pygame.image.load("images/tiles/Grass_TM.png"),(self.tileWidth,self.tileHeight))
+        self.sprite_grass_TR = pygame.transform.scale(pygame.image.load("images/tiles/Grass_TR.png"),(self.tileWidth,self.tileHeight))
+        self.sprite_grass_Centre = pygame.transform.scale(pygame.image.load("images/tiles/Grass_Centre.png"),(self.tileWidth,self.tileHeight))
+        self.sprite_grass_L = pygame.transform.scale(pygame.image.load("images/tiles/Grass_L.png"),(self.tileWidth,self.tileHeight))
+        self.sprite_grass_R = pygame.transform.scale(pygame.image.load("images/tiles/Grass_R.png"),(self.tileWidth,self.tileHeight))
 
     def insertSpaces(self,filePath):
         numOfChars_width = int(self.width/self.tileWidth)
@@ -69,18 +78,13 @@ class Level:
         if(surface is None):
             surface = self.surface
         for tile in self.blockList:
-            if(tile[4] == '#'): #if charID is # then draw red square
-                self.drawRect((180,30,30),(tile[0],tile[1],tile[2],tile[3]))
-                self.drawRect((250,30,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+            if(tile[4] == '#'):
+                self.surface.blit(self.sprite_grass_Centre,(tile[0]+self.camera.x,tile[1]+self.camera.y))
             elif(tile[4] == '$'):
-                self.drawRect((30,180,30),(tile[0],tile[1],tile[2],tile[3]))
-                self.drawRect((30,250,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.surface.blit(self.sprite_grass_TM,(tile[0]+self.camera.x,tile[1]+self.camera.y))
             elif(tile[4] == '@'):
-                self.drawRect((30,30,180),(tile[0],tile[1],tile[2],tile[3]))
-                self.drawRect((30,30,250),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.surface.blit(self.sprite_grass_TL,(tile[0]+self.camera.x,tile[1]+self.camera.y))
             elif(tile[4] == '!'):
-                self.drawRect((180,180,30),(tile[0],tile[1],tile[2],tile[3]))
-                self.drawRect((250,250,30),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.surface.blit(self.sprite_grass_TR,(tile[0]+self.camera.x,tile[1]+self.camera.y))
             elif(tile[4] == '%'):
-                self.drawRect((180,30,180),(tile[0],tile[1],tile[2],tile[3]))
-                self.drawRect((250,30,250),(tile[0]+2,tile[1]+2,tile[2]-4,tile[3]-4))
+                self.surface.blit(self.sprite_grass_L,(tile[0]+self.camera.x,tile[1]+self.camera.y))
