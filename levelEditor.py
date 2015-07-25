@@ -58,29 +58,36 @@ class LevelEditor:
         self.mouseX,self.mouseY = pygame.mouse.get_pos()
         self.updateGrid()
         if(pygame.mouse.get_pressed()[0]):
+            try:
+                self.level.blockList.remove((self.gridMouseX*self.level.tileWidth,self.gridMouseY*self.level.tileHeight,self.level.tileWidth,self.level.tileHeight,self.level.gridList[self.gridMouseY][self.gridMouseX]))
+            except:
+                 print("nothing there")
+            if(self.currentBID != ' '):
+                self.level.blockList.append((self.gridMouseX*self.level.tileWidth,self.gridMouseY*self.level.tileHeight,self.level.tileWidth,self.level.tileHeight,self.currentBID))
             self.level.gridList[int(self.gridMouseY)][int(self.gridMouseX)] = self.currentBID
-            self.level.blockList.append((self.gridMouseX*self.level.tileWidth,self.gridMouseY*self.level.tileHeight,self.level.tileWidth,self.level.tileHeight,self.currentBID))
             print("mouse was pressed")
 
     def drawUI(self):
         startX,startY,uiW,uiH = (0,screen_height-85,screen_width,85)
         pygame.draw.rect(self.surface,(30,30,30),(startX,startY,uiW,uiH))
         self.drawUIBlock(self.sprite_grass_Centre,(startX+5,startY+5,35,35),'#')
-        self.drawUIBlock((0,200,0),(startX+45,startY+5,35,35),'$')
-        self.drawUIBlock((0,0,200),(startX+85,startY+5,35,35),'@')
-        self.drawUIBlock((200,200,0),(startX+125,startY+5,35,35),'!')
-        self.drawUIBlock((200,0,200),(startX+5,startY+45,35,35),'%')
+        self.drawUIBlock(self.sprite_grass_TM,(startX+45,startY+5,35,35),'$')
+        self.drawUIBlock(self.sprite_grass_TL,(startX+85,startY+5,35,35),'@')
+        self.drawUIBlock(self.sprite_grass_TR,(startX+125,startY+5,35,35),'!')
+        self.drawUIBlock(self.sprite_grass_L,(startX+5,startY+45,35,35),'%')
+        self.drawUIBlock(self.sprite_grass_R,(startX+45,startY+45,35,35),'^')
+        self.drawUIBlock((255,255,255),(startX+85,startY+45,35,35),' ')
 
     def drawUIBlock(self,color,rect,bID):
         x,y,w,h = (0,1,2,3)
-        print(type(color))
         if(type(color) is tuple):
             if(self.mouseX >= rect[x] and self.mouseX <= rect[x]+rect[w] and self.mouseY >= rect[y] and self.mouseY <= rect[y]+rect[h]):
                 pygame.draw.rect(self.surface,color,rect)
-                if(pygame.mouse.get_pressed()[0]):
-                    self.currentBID = bID
-                    print("bid = %s"%(bID))
             else:
                 pygame.draw.rect(self.surface,(color[0]*0.6,color[1]*0.6,color[2]*0.6),rect)
         elif(type(color) is pygame.Surface):
             self.surface.blit(color,(rect[0],rect[1]))
+        if(pygame.mouse.get_pressed()[0] and (self.mouseX >= rect[x] and self.mouseX <= rect[x]+rect[w] and self.mouseY >= rect[y] and self.mouseY <= rect[y]+rect[h])):
+            self.currentBID = bID
+            print("bid = %s"%(bID))
+
