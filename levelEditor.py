@@ -30,16 +30,16 @@ class LevelEditor:
     def drawGrid(self):
         if(self.grid):
             gridColor = (100,0,0)
-            for x in range(int(screen_width/self.level.tileWidth)):
-                pygame.draw.line(self.surface,gridColor,(x*self.level.tileWidth,0),(x*self.level.tileWidth,screen_height))
-            for y in range(int(screen_height/self.level.tileHeight)):
-                pygame.draw.line(self.surface,gridColor,(0,y*self.level.tileHeight),(screen_width,y*self.level.tileHeight))
-            pygame.draw.rect(self.surface,gridColor,(self.gridMouseX*self.level.tileWidth,self.gridMouseY*self.level.tileHeight,self.level.tileWidth,self.level.tileHeight))
+            for x in range(int(self.level.width/self.level.tileWidth)+1):
+                pygame.draw.line(self.surface,gridColor,(x*self.level.tileWidth+self.camera.x,0+self.camera.y),(x*self.level.tileWidth+self.camera.x,self.level.height+self.camera.y))
+            for y in range(int(self.level.height/self.level.tileHeight)+1):
+                pygame.draw.line(self.surface,gridColor,(0+self.camera.x,y*self.level.tileHeight+self.camera.y),(self.level.width+self.camera.x,y*self.level.tileHeight+self.camera.y))
+            pygame.draw.rect(self.surface,gridColor,(self.gridMouseX*self.level.tileWidth+self.camera.x,self.gridMouseY*self.level.tileHeight+self.camera.y,self.level.tileWidth,self.level.tileHeight))
 
     def updateGrid(self):
         if(self.grid):
-            mx = self.mouseX - (self.mouseX%self.level.tileWidth)  #round mouseX to a multiple of level tileWidth
-            my = self.mouseY - (self.mouseY%self.level.tileHeight) #round mouseY to a multiple of level tileHeight
+            mx = (self.mouseX-self.camera.x) - ((self.mouseX-self.camera.x)%self.level.tileWidth)  #round mouseX to a multiple of level tileWidth
+            my = (self.mouseY-self.camera.y) - ((self.mouseY-self.camera.y)%self.level.tileHeight) #round mouseY to a multiple of level tileHeight
             self.gridMouseX = mx/self.level.tileWidth
             self.gridMouseY = my/self.level.tileHeight
 
@@ -65,7 +65,7 @@ class LevelEditor:
         if(self.mouseX >= rect[x] and self.mouseX <= rect[x]+rect[w] and self.mouseY >= rect[y] and self.mouseY <= rect[y]+rect[h]):
             pygame.draw.rect(self.surface,color,rect)
             if(pygame.mouse.get_pressed()[0]):
-                self.currentBID = bID
+                self.currentBID = bIDs
                 print("bid = %s"%(bID))
         else:
             pygame.draw.rect(self.surface,(color[0]*0.6,color[1]*0.6,color[2]*0.6),rect)
