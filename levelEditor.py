@@ -1,11 +1,12 @@
-import os,sys,pygame,level
+import os,sys,pygame,level,camera
 screen_width, screen_height = (500,500)
 
 class LevelEditor:
-    def __init__(self,surface,passed_level=None):
+    def __init__(self,surface,passed_camera,passed_level=None):
         self.surface = surface
+        self.camera = passed_camera
         if(passed_level is None):
-            self.level = level.Level("testLevel.txt",2000,2000,self.surface)
+            self.level = level.Level("testLevel.txt",2000,2000,self.camera,self.surface)
         else:
             self.level = passed_level
             self.level.setSurface(self.surface)
