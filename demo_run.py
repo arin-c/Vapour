@@ -1,10 +1,11 @@
-import os, sys, pygame,levelEditor,player
+import os, sys, pygame,levelEditor,camera,player
 
 pygame.init()
 screen_width, screen_height = 500,500
+cam = camera.Camera(screen_width,screen_height)
 screen = pygame.display.set_mode((screen_width,screen_height))
-lEditor = levelEditor.LevelEditor(screen)
-player = player.Player(100,50,screen)
+lEditor = levelEditor.LevelEditor(screen,cam)
+player = player.Player(100,50,cam,screen,"images/Player/")
 player.setLevel(lEditor.getLevel())
 pygame.display.set_caption("Vapour")
 quit = False
@@ -30,6 +31,7 @@ while(not quit):
     quit = handleEvents()
     lEditor.update()
     player.update()
+    cam.centre(player)
     screen.fill(0)
     lEditor.draw()
     player.draw()
