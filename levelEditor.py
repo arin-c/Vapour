@@ -86,7 +86,11 @@ class LevelEditor:
             else:
                 pygame.draw.rect(self.surface,(color[0]*0.6,color[1]*0.6,color[2]*0.6),rect)
         elif(type(color) is pygame.Surface):
-            self.surface.blit(color,(rect[0],rect[1]))
+            if(self.mouseX >= rect[x] and self.mouseX <= rect[x]+rect[w] and self.mouseY >= rect[y] and self.mouseY <= rect[y]+rect[h]):
+                pygame.draw.rect(self.surface,(0,0,0),(rect[x]-2,rect[y]-2,rect[w]+4,rect[h]+4))
+                self.surface.blit(color,(rect[0],rect[1]))
+            else:
+                self.surface.blit(color,(rect[0],rect[1]))
         if(pygame.mouse.get_pressed()[0] and (self.mouseX >= rect[x] and self.mouseX <= rect[x]+rect[w] and self.mouseY >= rect[y] and self.mouseY <= rect[y]+rect[h])):
             self.currentBID = bID
             print("bid = %s"%(bID))
