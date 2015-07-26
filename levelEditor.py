@@ -46,6 +46,11 @@ class LevelEditor:
             for y in range(int(self.level.height/self.level.tileHeight)+1):
                 pygame.draw.line(self.surface,gridColor,(0+self.camera.x,y*self.level.tileHeight+self.camera.y),(self.level.width+self.camera.x,y*self.level.tileHeight+self.camera.y))
             pygame.draw.rect(self.surface,gridColor,(self.gridMouseX*self.level.tileWidth+self.camera.x,self.gridMouseY*self.level.tileHeight+self.camera.y,self.level.tileWidth,self.level.tileHeight))
+            mx = self.gridMouseX*self.level.tileWidth+self.camera.x
+            my = self.gridMouseY*self.level.tileHeight+self.camera.y
+            w,h = self.level.tileWidth,self.level.tileHeight
+            rect = [[mx,my],[mx+w,my],[mx,my+h],[mx+w,my+h]]
+            self.drawRotatedRect(rect)
 
     def updateGrid(self):
         if(self.grid):
@@ -95,3 +100,21 @@ class LevelEditor:
             self.currentBID = bID
             print("bid = %s"%(bID))
 
+    def rotatePoint(self, angle, point, origin):
+        sinT = sin(radians(angle))
+        cosT = cos(radians(angle))
+        return (origin[0] + (cosT * (point[0] - origin[0]) - sinT * (point[1] - origin[1])), origin[1] + (sinT * (point[0] - origin[0]) + cosT * (point[1] - origin[1])))
+
+    def rotateRect(self, degrees):
+        center = (self.collideRect.centerx, self.collideRect.centery)
+        self.collideRect.topleft = self.rotatePoint(degrees, self.collideRect.topleft, center)
+        self.collideRect.topright = self.rotatePoint(degrees, self.collideRect.topright, center)
+        self.collideRect.bottomleft = self.rotatePoint(degrees, self.collideRect.bottomleft, center)
+        self.collideRect.bottomright = self.rotatePoint(degrees, self.collideRect.bottomright)
+
+    def drawRotatedRect(self,rect):
+        tL,tR,bL,bR = (0,1,2,3)
+        pygame.draw.line(self.surface,(0,0,0),rect[tL],rect[tR],3)
+        pygame.draw.line(self.surface,(0,0,0),rect[tR],rect[bR],3)
+        pygame.draw.line(self.surface,(0,0,0),rect[bR],rect[bL],3)
+        pygame.draw.line(self.surface,(0,0,0),rect[tL],rect[bL],3)
