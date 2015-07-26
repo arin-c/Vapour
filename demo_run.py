@@ -1,46 +1,59 @@
-import os, sys, pygame,levelEditor,camera,player
+def start(editingMode=False):
+    import os, sys, pygame,levelEditor,level,camera,player
 
-pygame.init()
-screen_width, screen_height = 500,500
-cam = camera.Camera(screen_width,screen_height)
-screen = pygame.display.set_mode((screen_width,screen_height))
-lEditor = levelEditor.LevelEditor(screen,cam)
-currentLevel = lEditor.getLevel()
-player = player.Player(100,50,cam,screen,"images/Player/")
-player.setLevel(lEditor.getLevel())
-pygame.display.set_caption("Vapour")
-quit = False
-
-def handleEvents():
-    for e in pygame.event.get():
-        if(e.type == pygame.KEYDOWN):
-            if(e.key == pygame.K_ESCAPE):
+    def handleEvents():
+        for e in pygame.event.get():
+            if(e.type == pygame.KEYDOWN):
+                if(e.key == pygame.K_ESCAPE):
+                    return True
+                elif(e.key == pygame.K_UP):
+                    pc.move("JUMP")
+                elif(e.key == pygame.K_g):
+                    if(editingMode):
+                        lEditor.grid = not(lEditor.grid)
+            if(e.type == pygame.QUIT):
                 return True
-            elif(e.key == pygame.K_UP):
-                player.move("JUMP")
-            elif(e.key == pygame.K_g):
-                lEditor.grid = not(lEditor.grid)
-        if(e.type == pygame.QUIT):
-            return True
-    key = pygame.key.get_pressed()
-    if(key[pygame.K_LEFT]):
-        player.move("LEFT")
-    elif(key[pygame.K_RIGHT]):
-        player.move("RIGHT")
-    return False
-backgroundSurface = pygame.surface.Surface((currentLevel.width,currentLevel.height))
-if(hasattr(currentLevel,'background')):
-    backgroundSurface.blit(currentLevel.background,(0,0))
+        key = pygame.key.get_pressed()
+        if(key[pygame.K_LEFT]):
+            pc.move("LEFT")
+        elif(key[pygame.K_RIGHT]):
+            pc.move("RIGHT")
+        return False
 
-while(not quit):
-    pygame.time.Clock().tick(45)
-    quit = handleEvents()
-    lEditor.update()
-    player.update()
-    cam.centre(player)
-    screen.fill(0)
-    screen.blit(backgroundSurface,(0,0))
-    lEditor.draw()
-    player.draw()
-    pygame.display.flip()
-currentLevel.save('2sweg.txt')
+    pygame.init()
+    screen_width, screen_height = 500,500
+    cam = camera.Camera(screen_width,screen_height)
+    screen = pygame.display.set_mode((screen_width,screen_height))
+    if(editingMode):
+        lEditor = levelEditor.LevelEditor(screen,cam)
+        currentLevel = lEditor.getLevel()
+    else:
+        currentLevel = level.Level("testLevel.txt",2000,2000,cam,screen)
+        currentLevel.setBackground(pygame.image.load("images/sky.png"))
+    pc = player.Player(100,50,cam,screen,"images/Player/")
+    pc.setLevel(currentLevel)
+    pygame.display.set_caption("Vapour")
+    quit = False
+    backgroundSurface = pygame.surface.Surface((currentLevel.width,currentLevel.height))
+    if(hasattr(currentLevel,'background')):
+        backgroundSurface.blit(currentLevel.background,(0,0))
+    while(not quit):
+        pygame.time.Clock().tick(45)
+        quit = handleEvents()
+        if(editingMode):
+            lEditor.update()
+        pc.update()
+        cam.centre(pc)
+        screen.fill(0)
+        screen.blit(backgroundSurface,(0,0))
+        if(editingMode):
+            lEditor.draw()
+        else:
+            currentLevel.draw()
+        pc.draw()
+        pygame.display.flip()
+    currentLevel.save('2sweg.txt')
+    pygame.quit()
+
+if(__name__ == "__main__"):
+    start(True)
