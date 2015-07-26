@@ -1,4 +1,4 @@
-import os,sys,pygame,level,camera
+import os,sys,pygame,level,camera,math
 screen_width, screen_height = (500,500)
 
 class LevelEditor:
@@ -49,7 +49,8 @@ class LevelEditor:
             mx = self.gridMouseX*self.level.tileWidth+self.camera.x
             my = self.gridMouseY*self.level.tileHeight+self.camera.y
             w,h = self.level.tileWidth,self.level.tileHeight
-            rect = [[mx,my],[mx+w,my],[mx,my+h],[mx+w,my+h]]
+            rect = [[mx,my],[mx+w,my],[mx,my+h],[mx+w,my+h],mx+int(w/2),my+int(h/2)]
+            self.rotateRect(100,rect)
             self.drawRotatedRect(rect)
 
     def updateGrid(self):
@@ -101,16 +102,17 @@ class LevelEditor:
             print("bid = %s"%(bID))
 
     def rotatePoint(self, angle, point, origin):
-        sinT = sin(radians(angle))
-        cosT = cos(radians(angle))
+        sinT = math.sin(math.radians(angle))
+        cosT = math.cos(math.radians(angle))
         return (origin[0] + (cosT * (point[0] - origin[0]) - sinT * (point[1] - origin[1])), origin[1] + (sinT * (point[0] - origin[0]) + cosT * (point[1] - origin[1])))
 
-    def rotateRect(self, degrees):
-        center = (self.collideRect.centerx, self.collideRect.centery)
-        self.collideRect.topleft = self.rotatePoint(degrees, self.collideRect.topleft, center)
-        self.collideRect.topright = self.rotatePoint(degrees, self.collideRect.topright, center)
-        self.collideRect.bottomleft = self.rotatePoint(degrees, self.collideRect.bottomleft, center)
-        self.collideRect.bottomright = self.rotatePoint(degrees, self.collideRect.bottomright)
+    def rotateRect(self, degrees,rect):
+        tL,tR,bL,bR,cX,cY = (0,1,2,3,4,5)
+        center = (rect[cX],rect[cY])
+        rect[tL] = self.rotatePoint(degrees,rect[tL],center)
+        rect[tR] = self.rotatePoint(degrees,rect[tR],center)
+        rect[bL] = self.rotatePoint(degrees,rect[bL],center)
+        rect[bR] = self.rotatePoint(degrees,rect[bR],center)
 
     def drawRotatedRect(self,rect):
         tL,tR,bL,bR = (0,1,2,3)
