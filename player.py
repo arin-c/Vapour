@@ -5,7 +5,6 @@ class Player():
         self.x = self.startX = startX
         self.y = self.startY = startY
         self.camera = passed_camera
-        print(passed_camera)
         self.velX = 16
         self.velY = 16
         self.cWidth = 45
@@ -42,7 +41,6 @@ class Player():
                     temp.append(pygame.transform.flip(pygame.transform.scale(pygame.image.load(rootFolder+"/"+str(indexCounter)+".jpeg"),(int(width*self.camera.zoom),int(height*self.camera.zoom))),flip[0],flip[1]))
                 else:
                     break
-            print(temp)
             return temp
         else:
             print("not a valid directory: " + rootFolder)
@@ -82,7 +80,7 @@ class Player():
 
     def draw(self):
         self.deltaAnim += 1
-        pygame.draw.rect(self.surface,(0,0,255),(self.x+self.camera.x,self.y+self.camera.y,self.cWidth,self.cHeight))
+        #pygame.draw.rect(self.surface,(0,0,255),(self.x+self.camera.x,self.y+self.camera.y,self.cWidth,self.cHeight))
         if(self.xDir == "LEFT"):
             self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight))
         elif(self.xDir == "RIGHT"):
@@ -112,7 +110,7 @@ class Player():
         x,y,w,h,bID = (0,1,2,3,4)
         gap = 0
         for block in self.level.blockList:
-            if(not(block[y] >= py+self.cHeight or block[y]+block[h] <= py or block[x]+block[w] <= px or block[x] >= px+self.cWidth) and (block[bID] == '#' or block[bID] == '$' or block[bID] == '@' or block[bID] == '!' or block[bID] == '%')):
+            if(not(block[y] >= py+self.cHeight or block[y]+block[h] <= py or block[x]+block[w] <= px or block[x] >= px+self.cWidth) and (block[bID] == '#' or block[bID] == '$' or block[bID] == '@' or block[bID] == '!' or block[bID] == '%' or block[bID] == '^')):
                 if(direction == "UP" or direction == "JUMP"):
                     gap = self.y-(block[y]+block[h])
                 elif(direction == "DOWN"):
