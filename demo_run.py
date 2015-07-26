@@ -6,9 +6,9 @@ def start(editingMode=False):
             if(e.type == pygame.KEYDOWN):
                 if(e.key == pygame.K_ESCAPE):
                     return True
-                elif(e.key == pygame.K_UP):
+                if(e.key == pygame.K_UP):
                     pc.move("JUMP")
-                elif(e.key == pygame.K_g):
+                if(e.key == pygame.K_g):
                     if(editingMode):
                         lEditor.grid = not(lEditor.grid)
             if(e.type == pygame.QUIT):
@@ -18,6 +18,11 @@ def start(editingMode=False):
             pc.move("LEFT")
         elif(key[pygame.K_RIGHT]):
             pc.move("RIGHT")
+        if(editingMode):
+            if(key[pygame.K_e]):
+                lEditor.blockRotation+=5
+            elif(key[pygame.K_q]):
+                lEditor.blockRotation-=5
         return False
 
     pygame.init()
