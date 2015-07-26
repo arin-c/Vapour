@@ -17,6 +17,7 @@ class LevelEditor:
         self.currentBID = '#'
         self.loadUISprites()
         self.blockRect = [[self.mouseX,self.mouseY],[self.mouseX+self.level.tileWidth,self.mouseY],[self.mouseX,self.mouseY+self.level.tileHeight],[self.mouseX+self.level.tileWidth,self.mouseY+self.level.tileHeight],self.mouseX+int(self.level.tileWidth/2),self.mouseY+int(self.level.tileHeight/2)]
+        self.blockRotation = 0
 
     def draw(self):
         self.level.draw()
@@ -51,7 +52,7 @@ class LevelEditor:
             my = self.gridMouseY*self.level.tileHeight+self.camera.y
             w,h = self.level.tileWidth,self.level.tileHeight
             self.blockRect = [[mx,my],[mx+w,my],[mx,my+h],[mx+w,my+h],mx+int(w/2),my+int(h/2)]
-            self.rotateRect(100,self.blockRect)
+            self.rotateRect(self.blockRotation,self.blockRect)
             self.drawRotatedRect(self.blockRect)
 
     def updateGrid(self):
