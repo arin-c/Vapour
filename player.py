@@ -19,6 +19,16 @@ class Player():
         self.rootFolder = rootFolder
         self.loadSprites()
         self.deltaAnim = 0
+        self.health = 100
+        self.maxHealth = 100
+        self.hudFont = pygame.font.Font("visitor1.ttf",13)
+        self.hudFont.set_bold(True)
+        self.xp = 30
+        self.xpOnCurrentLevel = 0
+        self.xpToNextLevel = 100
+        self.xpNextLevel = 100
+        self.hudPlayerIcon = pygame.transform.scale(pygame.image.load("images/HUDplayer.gif"),(40,40))
+        self.xpLevel = 1
 
     def loadSprites(self):
         self.sprite_still = self.addAnimation(self.rootFolder+"/STILL",self.sWidth,self.sHeight)
@@ -85,6 +95,7 @@ class Player():
             self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight))
         elif(self.xDir == "RIGHT"):
             self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
+        self.drawHUD()
 
     def update(self):
         if(self.jump):
@@ -121,3 +132,18 @@ class Player():
                     gap = block[x]-(self.x+self.cWidth)
                 return False,gap
         return True,gap
+
+    def drawHUD(self):
+        #outLineColor = (240,180,0)
+        outLineColor = (0,0,150)
+        pygame.draw.rect(self.surface,outLineColor,(40,15,173,22))
+        pygame.draw.rect(self.surface,(255,255,255),(46,17,165,8)) #health bar rect
+        pygame.draw.rect(self.surface,(0,255,0),(46,17,(float(self.health)/float(self.maxHealth))*165,8))
+        self.surface.blit(self.hudFont.render(str(int(self.health)) + '/' + str(int(self.maxHealth)),1,(0,0,0)),(50,15))
+        pygame.draw.rect(self.surface,(255,255,255),(46,27,165,8)) #xp bar rect
+        pygame.draw.rect(self.surface,(204,153,0),(46,27,(float(self.xpOnCurrentLevel)/float(self.xpToNextLevel))*165,8))
+        self.surface.blit(self.hudFont.render(str(int(self.xp)) + '/' + str(self.xpNextLevel),1,(0,0,0)),(50,25))
+        pygame.draw.circle(self.surface,outLineColor,(25,25),22)
+        self.surface.blit(self.hudPlayerIcon,(5,5))
+        self.surface.blit(self.hudFont.render("lvl " + str(self.xpLevel),1,(0,0,0)),(10,43))
+        self.surface.blit(self.hudFont.render("Vapour",0,(0,0,0)),(45,5))
