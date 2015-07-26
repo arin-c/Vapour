@@ -1,5 +1,5 @@
 #C:\Python32\python.exe "$(FULL_CURRENT_PATH)" "$(CURRENT_DIRECTORY)" "$(NAME_PART)"
-import Tkinter as tk
+import tkinter as tk
 import sys,demo_run
 resX, resY = 225, 325
 mainWindow = tk.Tk()
