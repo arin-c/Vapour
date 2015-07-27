@@ -96,6 +96,7 @@ class Player():
         elif(self.xDir == "RIGHT"):
             self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
         self.drawHUD()
+        self.collisionDetection()
 
     def update(self):
         if(self.jump):
@@ -147,3 +148,30 @@ class Player():
         self.surface.blit(self.hudPlayerIcon,(5,5))
         self.surface.blit(self.hudFont.render("lvl " + str(self.xpLevel),1,(0,0,0)),(10,43))
         self.surface.blit(self.hudFont.render("Vapour",0,(0,0,0)),(45,5))
+
+    def collisionDetection(self):
+        a1x,a1y,a2x,a2y,a3x,a3y,a4x,a4y = 0,0,0,0,0,0,0,0
+        pr = ((self.x,self.y),(self.x+self.cWidth,self.y),(self.x,self.y+self.cHeight),(self.x+self.cWidth,self.y+self.cHeight))
+        tl,tr,bl,br,cx,cy = (0,1,2,3,4,5)
+        x,y=0,1
+        #print("collision detection")
+        for block in self.level.blockList:
+            if(len(block) >= 6):
+                a1x2 = block[5][tl][x]
+                a1y2 = block[5][tl][y]
+                a1x = block[5][tr][x]
+                a1y = block[5][tr][y]
+                pygame.draw.line(self.surface,(255,0,0),(block[5][cx]+self.camera.x,block[5][cy]+self.camera.y),(a1x+self.camera.x,a1y+self.camera.y),2)
+                pygame.draw.line(self.surface,(255,0,0),(block[5][cx]+self.camera.x,block[5][cy]+self.camera.y),(a1x2+self.camera.x,a1y2+self.camera.y),2)
+                #print("a1x = %i, a1y = %i"%(a1x,a1y))
+                a1 = self.minusVector((a1x,a1y),(a1x2,a1y2))
+                pygame.draw.line(self.surface,(0,255,0),(a1[x]+self.camera.x,a1[y]+self.camera.y),(500,500),2)
+                print(a1)
+
+    def minusVector(self,v1,v2):
+        x,y= (0,1)
+        return (v1[x]-v2[x],v1[y]-v2[y])
+
+    def drawVector(self,v,orgin):
+        x,y = (0,1)
+        pygame.draw.line(self.surface,())
