@@ -157,21 +157,42 @@ class Player():
         #print("collision detection")
         for block in self.level.blockList:
             if(len(block) >= 6):
-                a1x2 = block[5][tl][x]
-                a1y2 = block[5][tl][y]
-                a1x = block[5][tr][x]
-                a1y = block[5][tr][y]
-                pygame.draw.line(self.surface,(255,0,0),(block[5][cx]+self.camera.x,block[5][cy]+self.camera.y),(a1x+self.camera.x,a1y+self.camera.y),2)
-                pygame.draw.line(self.surface,(255,0,0),(block[5][cx]+self.camera.x,block[5][cy]+self.camera.y),(a1x2+self.camera.x,a1y2+self.camera.y),2)
-                #print("a1x = %i, a1y = %i"%(a1x,a1y))
-                a1 = self.minusVector((a1x,a1y),(a1x2,a1y2))
-                pygame.draw.line(self.surface,(0,255,0),(a1[x]+self.camera.x,a1[y]+self.camera.y),(500,500),2)
-                print(a1)
+                origin = (block[5][cx],block[5][cy])
+                a1 = self.minusVector(block[5][tr],block[5][tl],origin)
+                a2 = self.minusVector(block[5][tr],block[5][br],origin)
+                pOrigin = (self.x+int(self.cWidth/2),self.y+int(self.cHeight/2))
+                a3 = self.minusVector((self.x,self.y),(self.x,self.y+self.cHeight),pOrigin)
+                a4 = self.minusVector((self.x,self.y),(self.x+self.cWidth,self.y),pOrigin)
+                self.drawVector(a1,origin)
+                self.drawVector(a2,origin)
+                self.drawVector(a3,pOrigin)
+                self.drawVector(a4,pOrigin)
+                dp = self.dotProduct(block[5][tr],a1,origin)
+                ms = (((a1[x]-origin[x])**2)+((a1[y]-origin[y])**2))
+                s = float(dp)/float(ms)
+                prjA1 = (s*(a1[x]-origin[x]),s*(a1[y]-origin[y]))
+                print(prjA1,origin)
+                #pygame.draw.rect(self.surface,(255,255,0),(prjA1[x]+origin[x],prjA1[y]+origin[y],2,2))
+                pygame.draw.line(self.surface,(255,255,0),(prjA1[x]+origin[x],prjA1[y]+origin[y]),(prjA1[x]+origin[x],prjA1[y]+origin[y]),10)
+                self.drawVector((prjA1[x]+origin[x],prjA1[y]+origin[y]),(block[5][tr]))
 
-    def minusVector(self,v1,v2):
+    def minusVector(self,v1,v2,origin):
         x,y= (0,1)
-        return (v1[x]-v2[x],v1[y]-v2[y])
+        v1x = v1[x]-origin[x]
+        v1y = v1[y]-origin[y]
+        v2x = v2[x]-origin[x]
+        v2y = v2[y]-origin[y]
+        return ((v1x-v2x)+origin[x],v1y-v2y+origin[y])
 
-    def drawVector(self,v,orgin):
+    def dotProduct(self,v1,v2,origin):
+        x,y, = (0,1)
+        #setup vectors around origin
+        v1x = v1[x]-origin[x]
+        v1y = v1[y]-origin[y]
+        v2x = v2[x]-origin[x]
+        v2y = v2[y]-origin[y]
+        return ((v1x*v2x)+(v1y*v2y))
+    
+    def drawVector(self,v,origin):
         x,y = (0,1)
-        pygame.draw.line(self.surface,())
+        pygame.draw.line(self.surface,(0,0,255),(v[x]+self.camera.x,v[y]+self.camera.y),(origin[x]+self.camera.x,origin[y]+self.camera.y),3)
