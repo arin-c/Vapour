@@ -1,5 +1,7 @@
 import os,sys,pygame,camera,math
 from pygame.math import *
+from random import randint
+
 class Player():
     def __init__(self,startX,startY,passed_camera,surface,rootFolder):
         self.x = self.startX = startX
@@ -90,7 +92,7 @@ class Player():
 
     def draw(self):
         self.deltaAnim += 1
-        #pygame.draw.rect(self.surface,(0,0,255),(self.x+self.camera.x,self.y+self.camera.y,self.cWidth,self.cHeight))
+        pygame.draw.rect(self.surface,(0,0,255),(self.x+self.camera.x,self.y+self.camera.y,self.cWidth,self.cHeight))
         if(self.xDir == "LEFT"):
             self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight))
         elif(self.xDir == "RIGHT"):
@@ -163,10 +165,10 @@ class Player():
                 b_tr = Vector2(b[tr][x]-origin[x],b[tr][y]-origin[y])
                 b_bl = Vector2(b[bl][x]-origin[x],b[bl][y]-origin[y])
                 b_br = Vector2(b[br][x]-origin[x],b[br][y]-origin[y])
-                p_tl = Vector2(self.x-p_origin[x],self.y-p_origin[y])
-                p_tr = Vector2(self.x+self.cWidth-p_origin[x],self.y-p_origin[y])
-                p_br = Vector2(self.x+self.cWidth-p_origin[x],self.y+self.cHeight-p_origin[y])
-                p_bl = Vector2(self.x-p_origin[x],self.y+self.cHeight-p_origin[y])
+                p_tl = Vector2(self.x-origin[x],self.y-origin[y])
+                p_tr = Vector2(self.x+self.cWidth-origin[x],self.y-origin[y])
+                p_br = Vector2(self.x+self.cWidth-origin[x],self.y+self.cHeight-origin[y])
+                p_bl = Vector2(self.x-origin[x],self.y+self.cHeight-origin[y])
                 axis1 = (b_tr-b_tl).normalize()
                 axis2 = (b_tr-b_br).normalize()
                 axis3 = (p_tl-p_bl).normalize()
@@ -176,15 +178,34 @@ class Player():
                 self.drawAxis(axis3,p_origin)
                 self.drawAxis(axis4,p_origin)
                 projected_tr = self.project(p_tr,axis1)
-                pygame.draw.line(self.surface,(0,0,0),(projected_tr[x]+origin[x],projected_tr[y]+origin[y]),(p_tr.x+origin[x],p_tr.y+origin[y]))
-                #print(projected_tr)
+                projected_tl = self.project(p_tl,axis1)
+                projected_b_tr = self.project(b_tr,axis1)
+                projected_b_tl = self.project(b_tl,axis1)
+                cX,cY = self.camera.x,self.camera.y
+                pygame.draw.line(self.surface,(0,0,0),(projected_tr[x]+origin[x]+cX,projected_tr[y]+origin[y]+cY),(self.x+self.cWidth+cX,self.y+cY))
+                pygame.draw.line(self.surface,(0,0,0),(projected_tl[x]+origin[x]+cX,projected_tl[y]+origin[y]+cY),(self.x+cX,self.y+cY))
+                pygame.draw.line(self.surface,(255,0,0),(projected_b_tr[x]+origin[x]+cX,projected_b_tr[y]+origin[y]+cY),(b[tr][x]+cX,b[tr][y]+cY),2)
+                pygame.draw.line(self.surface,(255,0,0),(projected_b_tl[x]+origin[x]+cX,projected_b_tl[y]+origin[y]+cY),(b[tl][x]+cX,b[tl][y]+cY),2)
+                projected_tr = Vector2(projected_tr)
+                projected_tl = Vector2(projected_tl)
+                projected_b_tr = Vector2(projected_b_tr)
+                projected_b_tl = Vector2(projected_b_tl)
+                minA = projected_tr.dot(axis1)
+                maxA = projected_tl.dot(axis1)
+                maxB = projected_b_tr.dot(axis1)
+                minB = projected_b_tl.dot(axis1)
+                if(maxB >= minA or minB <= minA):
+                    print("overlap")
+                else:
+                    print("no overlap")
+                # print(projected_tr)
                 
     def drawAxis(self,axis,origin):
         x,y = (0,1)
-        pygame.draw.line(self.surface,(0,255,255),(axis.x+origin[x],axis.y+origin[y]),(axis.x*200+origin[x],axis.y*200+origin[y]),3)
+        pygame.draw.line(self.surface,(0,255,255),(-axis.x*300+origin[x]+self.camera.x,-axis.y*300+origin[y]+self.camera.y),(axis.x*200+origin[x]+self.camera.x,axis.y*200+origin[y]+self.camera.y),2)
         
     def project(self,point,axis):
-        x = (((point.x*axis.x)+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
+        x = (((point.x*axis[0])+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
         y = (((point.x*axis.x)+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
         return (axis.x*x,axis.y*y)
         
