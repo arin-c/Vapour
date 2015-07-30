@@ -1,5 +1,5 @@
 import os,sys,pygame,camera,math
-
+from pygame.math import *
 class Player():
     def __init__(self,startX,startY,passed_camera,surface,rootFolder):
         self.x = self.startX = startX
@@ -154,28 +154,40 @@ class Player():
         pr = ((self.x,self.y),(self.x+self.cWidth,self.y),(self.x,self.y+self.cHeight),(self.x+self.cWidth,self.y+self.cHeight))
         tl,tr,bl,br,cx,cy = (0,1,2,3,4,5)
         x,y=0,1
-        #print("collision detection")
         for block in self.level.blockList:
             if(len(block) >= 6):
                 origin = (block[5][cx],block[5][cy])
-                a1 = self.minusVector(block[5][tr],block[5][tl],origin)
-                a2 = self.minusVector(block[5][tr],block[5][br],origin)
-                pOrigin = (self.x+int(self.cWidth/2),self.y+int(self.cHeight/2))
-                a3 = self.minusVector((self.x,self.y),(self.x,self.y+self.cHeight),pOrigin)
-                a4 = self.minusVector((self.x,self.y),(self.x+self.cWidth,self.y),pOrigin)
-                self.drawVector(a1,origin)
-                self.drawVector(a2,origin)
-                self.drawVector(a3,pOrigin)
-                self.drawVector(a4,pOrigin)
-                dp = self.dotProduct(block[5][tr],a1,origin)
-                ms = (((a1[x]-origin[x])**2)+((a1[y]-origin[y])**2))
-                s = float(dp)/float(ms)
-                prjA1 = (s*(a1[x]-origin[x]),s*(a1[y]-origin[y]))
-                print(prjA1,origin)
-                #pygame.draw.rect(self.surface,(255,255,0),(prjA1[x]+origin[x],prjA1[y]+origin[y],2,2))
-                pygame.draw.line(self.surface,(255,255,0),(prjA1[x]+origin[x],prjA1[y]+origin[y]),(prjA1[x]+origin[x],prjA1[y]+origin[y]),10)
-                self.drawVector((prjA1[x]+origin[x],prjA1[y]+origin[y]),(block[5][tr]))
-
+                p_origin = (self.x+int(self.cWidth/2),self.y+int(self.cHeight/2))
+                b = block[5]
+                b_tl = Vector2(b[tl][x]-origin[x],b[tl][y]-origin[y])
+                b_tr = Vector2(b[tr][x]-origin[x],b[tr][y]-origin[y])
+                b_bl = Vector2(b[bl][x]-origin[x],b[bl][y]-origin[y])
+                b_br = Vector2(b[br][x]-origin[x],b[br][y]-origin[y])
+                p_tl = Vector2(self.x-p_origin[x],self.y-p_origin[y])
+                p_tr = Vector2(self.x+self.cWidth-p_origin[x],self.y-p_origin[y])
+                p_br = Vector2(self.x+self.cWidth-p_origin[x],self.y+self.cHeight-p_origin[y])
+                p_bl = Vector2(self.x-p_origin[x],self.y+self.cHeight-p_origin[y])
+                axis1 = (b_tr-b_tl).normalize()
+                axis2 = (b_tr-b_br).normalize()
+                axis3 = (p_tl-p_bl).normalize()
+                axis4 = (p_tl-p_tr).normalize()
+                self.drawAxis(axis1,origin)
+                self.drawAxis(axis2,origin)
+                self.drawAxis(axis3,p_origin)
+                self.drawAxis(axis4,p_origin)
+                projected_tr = self.project(p_tr,axis1)
+                pygame.draw.line(self.surface,(0,0,0),(projected_tr[x]+origin[x],projected_tr[y]+origin[y]),(p_tr.x+origin[x],p_tr.y+origin[y]))
+                #print(projected_tr)
+                
+    def drawAxis(self,axis,origin):
+        x,y = (0,1)
+        pygame.draw.line(self.surface,(0,255,255),(axis.x+origin[x],axis.y+origin[y]),(axis.x*200+origin[x],axis.y*200+origin[y]),3)
+        
+    def project(self,point,axis):
+        x = (((point.x*axis.x)+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
+        y = (((point.x*axis.x)+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
+        return (axis.x*x,axis.y*y)
+        
     def minusVector(self,v1,v2,origin):
         x,y= (0,1)
         v1x = v1[x]-origin[x]
@@ -184,15 +196,31 @@ class Player():
         v2y = v2[y]-origin[y]
         return ((v1x-v2x)+origin[x],v1y-v2y+origin[y])
 
-    def dotProduct(self,v1,v2,origin):
+    def dotProduct(self,v1,origin1,v2,origin2):
         x,y, = (0,1)
         #setup vectors around origin
-        v1x = v1[x]-origin[x]
-        v1y = v1[y]-origin[y]
-        v2x = v2[x]-origin[x]
-        v2y = v2[y]-origin[y]
+        v1x = v1[x]-origin1[x]
+        v1y = v1[y]-origin1[y]
+        v2x = v2[x]-origin2[x]
+        v2y = v2[y]-origin2[y]
         return ((v1x*v2x)+(v1y*v2y))
-    
+
+    def project2(self,v1,origin,point):
+        x,y = (0,1)
+        p0 = origin
+        p1 = v1
+        q = point
+        xx = (-q[x]*(p1[x]-p0[x]))-(q[y]*(p1[y]-p0[y]))
+        yy = (-p0[y]*(p1[x]-p0[x]))+(p0[x]*(p1[y]-p0[y]))
+        return (-yy,-xx)
+
+    def project_old(self,v1,origin1,v2,origin2):
+        x,y = (0,1)
+        dp = self.dotProduct(v1,origin1,v2,origin2)
+        ms = (((v2[x]-origin2[x])**2)+((v2[y]-origin2[y])**2))
+        s = float(dp)/float(ms)
+        return (s*(v2[x]-origin2[x]),s*(v2[y]-origin2[y]))
+
     def drawVector(self,v,origin):
         x,y = (0,1)
         pygame.draw.line(self.surface,(0,0,255),(v[x]+self.camera.x,v[y]+self.camera.y),(origin[x]+self.camera.x,origin[y]+self.camera.y),3)
