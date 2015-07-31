@@ -179,6 +179,8 @@ class Player():
                 self.drawAxis(axis4,p_origin)
                 projected_tr = self.project(p_tr,axis1)
                 projected_tl = self.project(p_tl,axis1)
+                projected_bl = self.project(p_bl,axis1)
+                projected_br = self.project(p_br,axis1)
                 projected_b_tr = self.project(b_tr,axis1)
                 projected_b_tl = self.project(b_tl,axis1)
                 cX,cY = self.camera.x,self.camera.y
@@ -186,18 +188,20 @@ class Player():
                 pygame.draw.line(self.surface,(0,0,0),(projected_tl[x]+origin[x]+cX,projected_tl[y]+origin[y]+cY),(self.x+cX,self.y+cY))
                 pygame.draw.line(self.surface,(255,0,0),(projected_b_tr[x]+origin[x]+cX,projected_b_tr[y]+origin[y]+cY),(b[tr][x]+cX,b[tr][y]+cY),2)
                 pygame.draw.line(self.surface,(255,0,0),(projected_b_tl[x]+origin[x]+cX,projected_b_tl[y]+origin[y]+cY),(b[tl][x]+cX,b[tl][y]+cY),2)
+                pygame.draw.line(self.surface,(255,0,0),(projected_bl[x]+origin[x]+cX,projected_bl[y]+origin[y]+cY),(self.x+cX,self.y+self.cHeight+cY))
+                pygame.draw.line(self.surface,(255,0,0),(projected_br[x]+origin[x]+cX,projected_br[y]+origin[y]+cY),(self.x+self.cWidth+cX,self.y+self.cHeight+cY))
                 projected_tr = Vector2(projected_tr)
                 projected_tl = Vector2(projected_tl)
                 projected_b_tr = Vector2(projected_b_tr)
                 projected_b_tl = Vector2(projected_b_tl)
-                minA = projected_tr.dot(axis1)
-                maxA = projected_tl.dot(axis1)
-                maxB = projected_b_tr.dot(axis1)
-                minB = projected_b_tl.dot(axis1)
+                minB = projected_tr.dot(axis1)
+                maxB = projected_tl.dot(axis1)
+                maxA = projected_b_tr.dot(axis1)
+                minA = projected_b_tl.dot(axis1)
                 if(maxB >= minA or minB <= minA):
-                    print("overlap")
-                else:
                     print("no overlap")
+                else:
+                    print("overlap")
                 # print(projected_tr)
                 
     def drawAxis(self,axis,origin):
