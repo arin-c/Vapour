@@ -1,6 +1,5 @@
 import os,sys,pygame,camera,math
-from pygame.math import *
-from random import randint
+from euclid import *
 
 class Player():
     def __init__(self,startX,startY,passed_camera,surface,rootFolder):
@@ -190,27 +189,46 @@ class Player():
                 pygame.draw.line(self.surface,(255,0,0),(projected_b_tl[x]+origin[x]+cX,projected_b_tl[y]+origin[y]+cY),(b[tl][x]+cX,b[tl][y]+cY),2)
                 pygame.draw.line(self.surface,(255,0,0),(projected_bl[x]+origin[x]+cX,projected_bl[y]+origin[y]+cY),(self.x+cX,self.y+self.cHeight+cY))
                 pygame.draw.line(self.surface,(255,0,0),(projected_br[x]+origin[x]+cX,projected_br[y]+origin[y]+cY),(self.x+self.cWidth+cX,self.y+self.cHeight+cY))
-                projected_tr = Vector2(projected_tr)
-                projected_tl = Vector2(projected_tl)
-                projected_b_tr = Vector2(projected_b_tr)
-                projected_b_tl = Vector2(projected_b_tl)
-                minB = projected_tr.dot(axis1)
-                maxB = projected_tl.dot(axis1)
-                maxA = projected_b_tr.dot(axis1)
-                minA = projected_b_tl.dot(axis1)
-                if(maxB >= minA or minB <= minA):
-                    print("no overlap")
-                else:
+                projected_tr = Vector2(projected_tr[x],projected_tr[y])
+                projected_tl = Vector2(projected_tl[x],projected_tl[y])
+                projected_bl = Vector2(projected_bl[x],projected_bl[y])
+                projected_br = Vector2(projected_br[x],projected_br[y])
+                projected_b_tr = Vector2(projected_b_tr[x],projected_b_tr[y])
+                projected_b_tl = Vector2(projected_b_tl[x],projected_b_tl[y])
+                s1 = projected_br.dot(axis1)
+                s2 = projected_bl.dot(axis1)
+                s3 = projected_tr.dot(axis1)
+                s4 = projected_tl.dot(axis1)
+                sb1 = projected_b_tr.dot(axis1)
+                sb2 = projected_b_tl.dot(axis1)
+                box_a = (s1,s2,s3,s4)
+                box_b = (sb1,sb2)
+                minA = min(box_a)
+                maxA = max(box_a)
+                minB = min(box_b)
+                maxB = max(box_b)
+                if(minB == sb1):
+                    pygame.draw.line(self.surface,(0,0,0),(projected_b_tr.x+origin[x]+cX,projected_b_tr.y+origin[y]+cY),(b[tr][x]+cX,b[tr][y]+cY),10)
+                elif(minB == sb2):
+                    pygame.draw.line(self.surface,(0,0,0),(projected_b_tl.x+origin[x]+cX,projected_b_tl.y+origin[y]+cY),(b[tl][x]+cX,b[tl][y]+cY),10)
+
+
+                if(minB <= maxA and maxB >= minA):
                     print("overlap")
-                # print(projected_tr)
+                else:
+                    print("no overlap")
                 
     def drawAxis(self,axis,origin):
         x,y = (0,1)
         pygame.draw.line(self.surface,(0,255,255),(-axis.x*300+origin[x]+self.camera.x,-axis.y*300+origin[y]+self.camera.y),(axis.x*200+origin[x]+self.camera.x,axis.y*200+origin[y]+self.camera.y),2)
         
     def project(self,point,axis):
-        x = (((point.x*axis[0])+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
-        y = (((point.x*axis.x)+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
+        try:
+            x = (((point.x*axis[0])+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
+            y = (((point.x*axis.x)+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
+        except:
+            x,y = (0,0)
+        print(x,y)
         return (axis.x*x,axis.y*y)
         
     def minusVector(self,v1,v2,origin):
