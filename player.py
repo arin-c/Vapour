@@ -6,8 +6,8 @@ class Player():
         self.x = self.startX = startX
         self.y = self.startY = startY
         self.camera = passed_camera
-        self.velX = 16
-        self.velY = 16
+        self.velX = 2
+        self.velY = 2
         self.cWidth = 45
         self.cHeight = 70
         self.sWidth = 45
@@ -97,7 +97,7 @@ class Player():
         elif(self.xDir == "RIGHT"):
             self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
         self.drawHUD()
-        self.collisionDetection()
+        self.collisionDetection((self.x,self.y))
 
     def update(self):
         if(self.jump):
@@ -132,8 +132,8 @@ class Player():
                     gap = self.x-(block[x]+block[w])
                 elif(direction == "RIGHT"):
                     gap = block[x]-(self.x+self.cWidth)
-                return False,gap
-        return True,gap
+                return False,0
+        return not(self.collisionDetection((px,py))),gap
 
     def drawHUD(self):
         #outLineColor = (240,180,0)
@@ -150,16 +150,16 @@ class Player():
         self.surface.blit(self.hudFont.render("lvl " + str(self.xpLevel),1,(0,0,0)),(10,43))
         self.surface.blit(self.hudFont.render("Vapour",0,(0,0,0)),(45,5))
 
-    def collisionDetection(self):
-        a1x,a1y,a2x,a2y,a3x,a3y,a4x,a4y = 0,0,0,0,0,0,0,0
+    def collisionDetection(self,(px,py)):
         pr = ((self.x,self.y),(self.x+self.cWidth,self.y),(self.x,self.y+self.cHeight),(self.x+self.cWidth,self.y+self.cHeight))
         tl,tr,bl,br,cx,cy = (0,1,2,3,4,5)
         x,y=0,1
+        p_origin = (px+int(self.cWidth/2),py+int(self.cHeight/2))
+        collision = False
         for block in self.level.blockList:
-            if(len(block) >= 6):
-                origin = (block[5][cx],block[5][cy])
-                p_origin = (self.x+int(self.cWidth/2),self.y+int(self.cHeight/2))
+            if(len(block) >= 6): #if block is rotated
                 b = block[5]
+                origin = (b[cx],b[cy])
                 b_tl = Vector2(b[tl][x]-origin[x],b[tl][y]-origin[y])
                 b_tr = Vector2(b[tr][x]-origin[x],b[tr][y]-origin[y])
                 b_bl = Vector2(b[bl][x]-origin[x],b[bl][y]-origin[y])
@@ -176,48 +176,71 @@ class Player():
                 self.drawAxis(axis2,origin)
                 self.drawAxis(axis3,p_origin)
                 self.drawAxis(axis4,p_origin)
-                projected_tr = self.project(p_tr,axis1)
-                projected_tl = self.project(p_tl,axis1)
-                projected_bl = self.project(p_bl,axis1)
-                projected_br = self.project(p_br,axis1)
-                projected_b_tr = self.project(b_tr,axis1)
-                projected_b_tl = self.project(b_tl,axis1)
-                cX,cY = self.camera.x,self.camera.y
-                pygame.draw.line(self.surface,(0,0,0),(projected_tr[x]+origin[x]+cX,projected_tr[y]+origin[y]+cY),(self.x+self.cWidth+cX,self.y+cY))
-                pygame.draw.line(self.surface,(0,0,0),(projected_tl[x]+origin[x]+cX,projected_tl[y]+origin[y]+cY),(self.x+cX,self.y+cY))
-                pygame.draw.line(self.surface,(255,0,0),(projected_b_tr[x]+origin[x]+cX,projected_b_tr[y]+origin[y]+cY),(b[tr][x]+cX,b[tr][y]+cY),2)
-                pygame.draw.line(self.surface,(255,0,0),(projected_b_tl[x]+origin[x]+cX,projected_b_tl[y]+origin[y]+cY),(b[tl][x]+cX,b[tl][y]+cY),2)
-                pygame.draw.line(self.surface,(255,0,0),(projected_bl[x]+origin[x]+cX,projected_bl[y]+origin[y]+cY),(self.x+cX,self.y+self.cHeight+cY))
-                pygame.draw.line(self.surface,(255,0,0),(projected_br[x]+origin[x]+cX,projected_br[y]+origin[y]+cY),(self.x+self.cWidth+cX,self.y+self.cHeight+cY))
-                projected_tr = Vector2(projected_tr[x],projected_tr[y])
-                projected_tl = Vector2(projected_tl[x],projected_tl[y])
-                projected_bl = Vector2(projected_bl[x],projected_bl[y])
-                projected_br = Vector2(projected_br[x],projected_br[y])
-                projected_b_tr = Vector2(projected_b_tr[x],projected_b_tr[y])
-                projected_b_tl = Vector2(projected_b_tl[x],projected_b_tl[y])
-                s1 = projected_br.dot(axis1)
-                s2 = projected_bl.dot(axis1)
-                s3 = projected_tr.dot(axis1)
-                s4 = projected_tl.dot(axis1)
-                sb1 = projected_b_tr.dot(axis1)
-                sb2 = projected_b_tl.dot(axis1)
-                box_a = (s1,s2,s3,s4)
-                box_b = (sb1,sb2)
-                minA = min(box_a)
-                maxA = max(box_a)
-                minB = min(box_b)
-                maxB = max(box_b)
-                if(minB == sb1):
-                    pygame.draw.line(self.surface,(0,0,0),(projected_b_tr.x+origin[x]+cX,projected_b_tr.y+origin[y]+cY),(b[tr][x]+cX,b[tr][y]+cY),10)
-                elif(minB == sb2):
-                    pygame.draw.line(self.surface,(0,0,0),(projected_b_tl.x+origin[x]+cX,projected_b_tl.y+origin[y]+cY),(b[tl][x]+cX,b[tl][y]+cY),10)
-
-
-                if(minB <= maxA and maxB >= minA):
-                    print("overlap")
+                pPos = (px,py)
+                f1 = self.checkAxis(block,axis1,pPos)
+                f2 = self.checkAxis(block,axis2,pPos)
+                f3 = self.checkAxis(block,axis3,pPos)
+                f4 = self.checkAxis(block,axis4,pPos)
+                if(f1 and f2 and f3 and f4):
+                    print("collision")
+                    collision = True
+                    break
                 else:
-                    print("no overlap")
-                
+                    print("no collision")
+        return collision
+
+    def checkAxis(self,block,axis,(px,py)):
+        tl,tr,bl,br,cx,cy = (0,1,2,3,4,5)
+        x,y = (0,1)
+        origin = (block[5][cx],block[5][cy])
+        p_origin = (px+int(self.cWidth/2),py+int(self.cHeight/2))
+        b = block[5]
+        b_tl = Vector2(b[tl][x]-origin[x],b[tl][y]-origin[y])
+        b_tr = Vector2(b[tr][x]-origin[x],b[tr][y]-origin[y])
+        b_bl = Vector2(b[bl][x]-origin[x],b[bl][y]-origin[y])
+        b_br = Vector2(b[br][x]-origin[x],b[br][y]-origin[y])
+        p_tl = Vector2(px-origin[x],py-origin[y])
+        p_tr = Vector2(px+self.cWidth-origin[x],py-origin[y])
+        p_br = Vector2(px+self.cWidth-origin[x],py+self.cHeight-origin[y])
+        p_bl = Vector2(px-origin[x],py+self.cHeight-origin[y])
+        projected_tr = self.project(p_tr,axis)
+        projected_tl = self.project(p_tl,axis)
+        projected_bl = self.project(p_bl,axis)
+        projected_br = self.project(p_br,axis)
+        projected_b_tr = self.project(b_tr,axis)
+        projected_b_tl = self.project(b_tl,axis)
+        cX,cY = self.camera.x,self.camera.y
+        pygame.draw.line(self.surface,(0,0,0),(projected_tr[x]+origin[x]+cX,projected_tr[y]+origin[y]+cY),(px+self.cWidth+cX,py+cY))
+        pygame.draw.line(self.surface,(0,0,0),(projected_tl[x]+origin[x]+cX,projected_tl[y]+origin[y]+cY),(px+cX,py+cY))
+        pygame.draw.line(self.surface,(255,0,0),(projected_b_tr[x]+origin[x]+cX,projected_b_tr[y]+origin[y]+cY),(b[tr][x]+cX,b[tr][y]+cY),2)
+        pygame.draw.line(self.surface,(255,0,0),(projected_b_tl[x]+origin[x]+cX,projected_b_tl[y]+origin[y]+cY),(b[tl][x]+cX,b[tl][y]+cY),2)
+        pygame.draw.line(self.surface,(255,0,0),(projected_bl[x]+origin[x]+cX,projected_bl[y]+origin[y]+cY),(px+cX,py+self.cHeight+cY))
+        pygame.draw.line(self.surface,(255,0,0),(projected_br[x]+origin[x]+cX,projected_br[y]+origin[y]+cY),(px+self.cWidth+cX,py+self.cHeight+cY))
+        projected_tr = Vector2(projected_tr[x],projected_tr[y])
+        projected_tl = Vector2(projected_tl[x],projected_tl[y])
+        projected_bl = Vector2(projected_bl[x],projected_bl[y])
+        projected_br = Vector2(projected_br[x],projected_br[y])
+        projected_b_tr = Vector2(projected_b_tr[x],projected_b_tr[y])
+        projected_b_tl = Vector2(projected_b_tl[x],projected_b_tl[y])
+        s1 = projected_br.dot(axis)
+        s2 = projected_bl.dot(axis)
+        s3 = projected_tr.dot(axis)
+        s4 = projected_tl.dot(axis)
+        sb1 = projected_b_tr.dot(axis)
+        sb2 = projected_b_tl.dot(axis)
+        box_a = (s1,s2,s3,s4)
+        box_b = (sb1,sb2)
+        minA = min(box_a)
+        maxA = max(box_a)
+        minB = min(box_b)
+        maxB = max(box_b)
+        if(minB <= maxA and maxB >= minA):
+            #print("overlap")
+            return True
+        else:
+            #print("no overlap")
+            return False
+
     def drawAxis(self,axis,origin):
         x,y = (0,1)
         pygame.draw.line(self.surface,(0,255,255),(-axis.x*300+origin[x]+self.camera.x,-axis.y*300+origin[y]+self.camera.y),(axis.x*200+origin[x]+self.camera.x,axis.y*200+origin[y]+self.camera.y),2)
@@ -228,7 +251,6 @@ class Player():
             y = (((point.x*axis.x)+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
         except:
             x,y = (0,0)
-        print(x,y)
         return (axis.x*x,axis.y*y)
         
     def minusVector(self,v1,v2,origin):
