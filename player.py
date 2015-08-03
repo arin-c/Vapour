@@ -1,5 +1,6 @@
 import os,sys,pygame,camera,math
 from euclid import *
+import random
 
 class Player():
     def __init__(self,startX,startY,passed_camera,surface,rootFolder):
@@ -31,6 +32,7 @@ class Player():
         self.hudPlayerIcon = pygame.transform.scale(pygame.image.load("images/HUDplayer.gif"),(40,40))
         self.xpLevel = 1
         self.missile = [200,200,40,25,0] #x,y,width,height and rotation(degrees)
+        self.trail = []
 
     def loadSprites(self):
         self.sprite_still = self.addAnimation(self.rootFolder+"/STILL",self.sWidth,self.sHeight)
@@ -113,7 +115,18 @@ class Player():
             velY = speed-math.fabs(velX)
         m[0]+=velX
         m[1]+=velY
-        self.surface.blit(pygame.transform.rotate(self.sprite_missile,-m[4]),(m[0]+self.camera.x,m[1]+self.camera.y))
+        self.trail.append([m[0]+(m[2]/2),m[1]+(m[3]/2),m[2],m[3],0])
+        indexCounter = 0
+        toRemove = -69
+        for point in self.trail:
+            pygame.draw.circle(self.surface,(255,255,0),(int(point[0])+random.randint(-3,2),int(point[1])+random.randint(-3,2)),15-point[4])
+            point[4]+=1
+            if(point[4] >= 15):
+                toRemove = indexCounter
+            indexCounter+=1
+        if(toRemove != -69):
+            self.trail.pop(toRemove)
+        #self.surface.blit(pygame.transform.rotate(self.sprite_missile,-m[4]),(m[0]+self.camera.x,m[1]+self.camera.y))
 
     def update(self):
         if(self.jump):
