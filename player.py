@@ -6,8 +6,8 @@ class Player():
         self.x = self.startX = startX
         self.y = self.startY = startY
         self.camera = passed_camera
-        self.velX = 2
-        self.velY = 2
+        self.velX = 16
+        self.velY = 16
         self.cWidth = 45
         self.cHeight = 70
         self.sWidth = 45
@@ -123,7 +123,7 @@ class Player():
         x,y,w,h,bID = (0,1,2,3,4)
         gap = 0
         for block in self.level.blockList:
-            if(not(block[y] >= py+self.cHeight or block[y]+block[h] <= py or block[x]+block[w] <= px or block[x] >= px+self.cWidth) and (block[bID] == '#' or block[bID] == '$' or block[bID] == '@' or block[bID] == '!' or block[bID] == '%' or block[bID] == '^')):
+            if(len(block) < 6 and not(block[y] >= py+self.cHeight or block[y]+block[h] <= py or block[x]+block[w] <= px or block[x] >= px+self.cWidth) and (block[bID] == '#' or block[bID] == '$' or block[bID] == '@' or block[bID] == '!' or block[bID] == '%' or block[bID] == '^')):
                 if(direction == "UP" or direction == "JUMP"):
                     gap = self.y-(block[y]+block[h])
                 elif(direction == "DOWN"):
@@ -132,8 +132,9 @@ class Player():
                     gap = self.x-(block[x]+block[w])
                 elif(direction == "RIGHT"):
                     gap = block[x]-(self.x+self.cWidth)
-                return False,0
-        return not(self.collisionDetection((px,py))),gap
+                return False,gap
+        # return not(self.collisionDetection((px,py))),gap
+        return True,gap
 
     def drawHUD(self):
         #outLineColor = (240,180,0)
@@ -178,8 +179,14 @@ class Player():
                 self.drawAxis(axis4,p_origin)
                 pPos = (px,py)
                 f1 = self.checkAxis(block,axis1,pPos)
+                if(not f1):
+                    continue
                 f2 = self.checkAxis(block,axis2,pPos)
+                if(not f2):
+                    continue
                 f3 = self.checkAxis(block,axis3,pPos)
+                if(not f3):
+                    continue
                 f4 = self.checkAxis(block,axis4,pPos)
                 if(f1 and f2 and f3 and f4):
                     print("collision")
@@ -209,11 +216,15 @@ class Player():
         projected_br = self.project(p_br,axis)
         projected_b_tr = self.project(b_tr,axis)
         projected_b_tl = self.project(b_tl,axis)
+        projected_b_bl = self.project(b_bl,axis)
+        projected_b_br = self.project(b_br,axis)
         cX,cY = self.camera.x,self.camera.y
         pygame.draw.line(self.surface,(0,0,0),(projected_tr[x]+origin[x]+cX,projected_tr[y]+origin[y]+cY),(px+self.cWidth+cX,py+cY))
         pygame.draw.line(self.surface,(0,0,0),(projected_tl[x]+origin[x]+cX,projected_tl[y]+origin[y]+cY),(px+cX,py+cY))
         pygame.draw.line(self.surface,(255,0,0),(projected_b_tr[x]+origin[x]+cX,projected_b_tr[y]+origin[y]+cY),(b[tr][x]+cX,b[tr][y]+cY),2)
         pygame.draw.line(self.surface,(255,0,0),(projected_b_tl[x]+origin[x]+cX,projected_b_tl[y]+origin[y]+cY),(b[tl][x]+cX,b[tl][y]+cY),2)
+        pygame.draw.line(self.surface,(255,0,0),(projected_b_bl[x]+origin[x]+cX,projected_b_bl[y]+origin[y]+cY),(b[bl][x]+cX,b[bl][y]+cY),2)
+        pygame.draw.line(self.surface,(255,0,0),(projected_b_br[x]+origin[x]+cX,projected_b_br[y]+origin[y]+cY),(b[br][x]+cX,b[br][y]+cY),2)
         pygame.draw.line(self.surface,(255,0,0),(projected_bl[x]+origin[x]+cX,projected_bl[y]+origin[y]+cY),(px+cX,py+self.cHeight+cY))
         pygame.draw.line(self.surface,(255,0,0),(projected_br[x]+origin[x]+cX,projected_br[y]+origin[y]+cY),(px+self.cWidth+cX,py+self.cHeight+cY))
         projected_tr = Vector2(projected_tr[x],projected_tr[y])
@@ -222,23 +233,25 @@ class Player():
         projected_br = Vector2(projected_br[x],projected_br[y])
         projected_b_tr = Vector2(projected_b_tr[x],projected_b_tr[y])
         projected_b_tl = Vector2(projected_b_tl[x],projected_b_tl[y])
+        projected_b_bl = Vector2(projected_b_bl[x],projected_b_bl[y])
+        projected_b_br = Vector2(projected_b_br[x],projected_b_br[y])
         s1 = projected_br.dot(axis)
         s2 = projected_bl.dot(axis)
         s3 = projected_tr.dot(axis)
         s4 = projected_tl.dot(axis)
         sb1 = projected_b_tr.dot(axis)
         sb2 = projected_b_tl.dot(axis)
+        sb3 = projected_b_bl.dot(axis)
+        sb4 = projected_b_br.dot(axis)
         box_a = (s1,s2,s3,s4)
-        box_b = (sb1,sb2)
+        box_b = (sb1,sb2,sb3,sb4)
         minA = min(box_a)
         maxA = max(box_a)
         minB = min(box_b)
         maxB = max(box_b)
         if(minB <= maxA and maxB >= minA):
-            #print("overlap")
             return True
         else:
-            #print("no overlap")
             return False
 
     def drawAxis(self,axis,origin):
@@ -247,45 +260,7 @@ class Player():
         
     def project(self,point,axis):
         try:
-            x = (((point.x*axis[0])+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
-            y = (((point.x*axis.x)+(point.y*axis.y))/((axis.x**2)+(axis.y**2)))
+            x = y = point.dot(axis)/axis.magnitude_squared()
         except:
             x,y = (0,0)
         return (axis.x*x,axis.y*y)
-        
-    def minusVector(self,v1,v2,origin):
-        x,y= (0,1)
-        v1x = v1[x]-origin[x]
-        v1y = v1[y]-origin[y]
-        v2x = v2[x]-origin[x]
-        v2y = v2[y]-origin[y]
-        return ((v1x-v2x)+origin[x],v1y-v2y+origin[y])
-
-    def dotProduct(self,v1,origin1,v2,origin2):
-        x,y, = (0,1)
-        #setup vectors around origin
-        v1x = v1[x]-origin1[x]
-        v1y = v1[y]-origin1[y]
-        v2x = v2[x]-origin2[x]
-        v2y = v2[y]-origin2[y]
-        return ((v1x*v2x)+(v1y*v2y))
-
-    def project2(self,v1,origin,point):
-        x,y = (0,1)
-        p0 = origin
-        p1 = v1
-        q = point
-        xx = (-q[x]*(p1[x]-p0[x]))-(q[y]*(p1[y]-p0[y]))
-        yy = (-p0[y]*(p1[x]-p0[x]))+(p0[x]*(p1[y]-p0[y]))
-        return (-yy,-xx)
-
-    def project_old(self,v1,origin1,v2,origin2):
-        x,y = (0,1)
-        dp = self.dotProduct(v1,origin1,v2,origin2)
-        ms = (((v2[x]-origin2[x])**2)+((v2[y]-origin2[y])**2))
-        s = float(dp)/float(ms)
-        return (s*(v2[x]-origin2[x]),s*(v2[y]-origin2[y]))
-
-    def drawVector(self,v,origin):
-        x,y = (0,1)
-        pygame.draw.line(self.surface,(0,0,255),(v[x]+self.camera.x,v[y]+self.camera.y),(origin[x]+self.camera.x,origin[y]+self.camera.y),3)
