@@ -30,9 +30,11 @@ class Player():
         self.xpNextLevel = 100
         self.hudPlayerIcon = pygame.transform.scale(pygame.image.load("images/HUDplayer.gif"),(40,40))
         self.xpLevel = 1
+        self.missile = [200,200,40,25,0] #x,y,width,height and rotation(degrees)
 
     def loadSprites(self):
         self.sprite_still = self.addAnimation(self.rootFolder+"/STILL",self.sWidth,self.sHeight)
+        self.sprite_missile = pygame.transform.flip(pygame.transform.smoothscale(pygame.image.load("images/missile.png").convert_alpha(),(40,25)),True,False)
 
     def addAnimation(self,rootFolder,width,height,flip = (False,False)):
         if(rootFolder.endswith('/')):
@@ -98,6 +100,20 @@ class Player():
             self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
         self.drawHUD()
         self.collisionDetection((self.x,self.y))
+        mouseX,mouseY = pygame.mouse.get_pos()
+        m = self.missile
+        diffX,diffY = (mouseX-m[0],mouseY-m[1])
+        m[4] = math.degrees(math.atan2(diffY,diffX))
+        speed = 10
+        velX = speed*((90-math.fabs(m[4]))/90)
+        velY = 0
+        if(m[4] < 0):
+            velY = -speed+math.fabs(velX)
+        else:
+            velY = speed-math.fabs(velX)
+        m[0]+=velX
+        m[1]+=velY
+        self.surface.blit(pygame.transform.rotate(self.sprite_missile,-m[4]),(m[0]+self.camera.x,m[1]+self.camera.y))
 
     def update(self):
         if(self.jump):
