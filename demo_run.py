@@ -28,7 +28,7 @@ def start(editingMode=False):
         return False
 
     pygame.init()
-    screen_width, screen_height = 1000,500
+    screen_width, screen_height = 500,500
     cam = camera.Camera(screen_width,screen_height)
     screen = pygame.display.set_mode((screen_width,screen_height))
     if(editingMode):
