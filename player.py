@@ -1,4 +1,4 @@
-import os,sys,pygame,camera,math
+import os,sys,pygame,camera,math,missile
 from euclid import *
 import random
 
@@ -33,6 +33,9 @@ class Player():
         self.xpLevel = 1
         self.missile = [200,200,40,25,0] #x,y,width,height and rotation(degrees)
         self.trail = []
+        self.missiles = []
+        self.missiles.append(missile.Missile(100,100,self.surface,(0,0)))
+        self.currentWeapon = "MISSILE"
 
     def loadSprites(self):
         self.sprite_still = self.addAnimation(self.rootFolder+"/STILL",self.sWidth,self.sHeight)
@@ -102,33 +105,13 @@ class Player():
             self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
         self.drawHUD()
         self.collisionDetection((self.x,self.y))
-        mouseX,mouseY = pygame.mouse.get_pos()
-        m = self.missile
-        diffX,diffY = (mouseX-m[0],mouseY-m[1])
-        m[4] = math.degrees(math.atan2(diffY,diffX))
-        speed = 10
-        velX = speed*((90-math.fabs(m[4]))/90)
-        velY = 0
-        if(m[4] < 0):
-            velY = -speed+math.fabs(velX)
-        else:
-            velY = speed-math.fabs(velX)
-        m[0]+=velX
-        m[1]+=velY
-        self.trail.append([m[0]+(m[2]/2),m[1]+(m[3]/2),m[2],m[3],0])
-        indexCounter = 0
-        toRemove = -69
-        for point in self.trail:
-            pygame.draw.circle(self.surface,(255,255,0),(int(point[0])+random.randint(-3,2),int(point[1])+random.randint(-3,2)),15-point[4])
-            point[4]+=1
-            if(point[4] >= 15):
-                toRemove = indexCounter
-            indexCounter+=1
-        if(toRemove != -69):
-            self.trail.pop(toRemove)
-        #self.surface.blit(pygame.transform.rotate(self.sprite_missile,-m[4]),(m[0]+self.camera.x,m[1]+self.camera.y))
+        for m in self.missiles:
+            m.draw()
 
     def update(self):
+        for m in self.missiles:
+            m.setTarget(pygame.mouse.get_pos())
+            m.update()
         if(self.jump):
             if(self.checkSpace(self.x,self.y-self.velY,"UP")[0]):
                 self.y-=self.velY
@@ -293,3 +276,7 @@ class Player():
         except:
             x,y = (0,0)
         return (axis.x*x,axis.y*y)
+
+    def attack(self):
+        if(self.currentWeapon == "MISSILE"):
+            self.missiles.append(missile.Missile(self.x+int(self.sWidth/2),self.y+int(self.sHeight/2),self.surface,(0,0)))
