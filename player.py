@@ -112,6 +112,10 @@ class Player():
         for m in self.missiles:
             m.setTarget(pygame.mouse.get_pos())
             m.update()
+            if(m.dead):
+                self.missiles.remove(m)
+                print("hit")
+                #break
         if(self.jump):
             if(self.checkSpace(self.x,self.y-self.velY,"UP")[0]):
                 self.y-=self.velY
@@ -279,4 +283,4 @@ class Player():
 
     def attack(self):
         if(self.currentWeapon == "MISSILE"):
-            self.missiles.append(missile.Missile(self.x+int(self.sWidth/2),self.y+int(self.sHeight/2),self.surface,(0,0)))
+            self.missiles.append(missile.Missile(self.x+int(self.sWidth/2)+self.camera.x,self.y+int(self.sHeight/2)+self.camera.y,self.surface,(0,0)))
