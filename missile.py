@@ -12,16 +12,22 @@ class Missile:
         self.width,self.height = (40,30)
         self.loadSprites()
         self.exploding = False
-        eslf.deltaE = 0
+        self.deltaE = 0
         self.dead = False
 
     def loadSprites(self):
         self.sprite_missile = pygame.transform.flip(pygame.transform.smoothscale(pygame.image.load("images/missile.png").convert_alpha(),(self.width,self.height)),True,False)
 
     def draw(self):
-        if(!self.exploding):
+        if(not self.exploding):
             self.drawTrail()
+        elif(self.exploding):
+            self.deltaE+=1
+            if(self.deltaE >= 30):
+                self.deltaE = 0
+                self.dead = True
         self.surface.blit(pygame.transform.rotate(self.sprite_missile,self.rotation),(self.x,self.y))
+
 
     def drawTrail(self):
         x,y,c = (0,1,2)
@@ -33,8 +39,9 @@ class Missile:
                 self.trail.remove(point)
         
     def update(self):
-        self.track()
-        self.trail.append([self.x+int(self.width/2),self.y+int(self.height/2),0])
+        if(not self.exploding):
+            self.track()
+            self.trail.append([self.x+int(self.width/2),self.y+int(self.height/2),0])
 
     def track(m):
         diffX = m.trackX - m.x
