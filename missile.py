@@ -11,6 +11,7 @@ class Missile:
         self.speed = 10
         self.width,self.height = (40,30)
         self.loadSprites()
+        self.dead = False
 
     def loadSprites(self):
         self.sprite_missile = pygame.transform.flip(pygame.transform.smoothscale(pygame.image.load("images/missile.png").convert_alpha(),(self.width,self.height)),True,False)
@@ -40,6 +41,8 @@ class Missile:
             velY = m.speed-math.fabs(velX)
         m.x+=velX
         m.y+=velY
+        if(diffX <= m.speed and diffX >= -m.speed and diffY <= m.speed and diffY >= -m.speed):
+            m.dead = True
 
     def setTarget(self,targetPos):
         self.trackX,self.trackY = targetPos
