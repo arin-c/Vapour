@@ -11,6 +11,8 @@ def start(editingMode=False):
                 if(e.key == pygame.K_g):
                     if(editingMode):
                         lEditor.grid = not(lEditor.grid)
+                if(e.key == pygame.K_SPACE):
+                    pc.attack()
             if(e.type == pygame.QUIT):
                 return True
         key = pygame.key.get_pressed()
@@ -26,7 +28,7 @@ def start(editingMode=False):
         return False
 
     pygame.init()
-    screen_width, screen_height = 500,500
+    screen_width, screen_height = 1000,500
     cam = camera.Camera(screen_width,screen_height)
     screen = pygame.display.set_mode((screen_width,screen_height))
     if(editingMode):
@@ -40,10 +42,11 @@ def start(editingMode=False):
     pygame.display.set_caption("Vapour")
     quit = False
     backgroundSurface = pygame.surface.Surface((currentLevel.width,currentLevel.height))
+    clock = pygame.time.Clock()
     if(hasattr(currentLevel,'background')):
         backgroundSurface.blit(currentLevel.background,(0,0))
     while(not quit):
-        pygame.time.Clock().tick(45)
+        clock.tick(45)
         quit = handleEvents()
         if(editingMode):
             lEditor.update()
