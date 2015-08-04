@@ -19,9 +19,10 @@ class Missile:
     def draw(self):
         x,y,c = (0,1,2)
         for point in self.trail:
-            pygame.draw.circle(self.surface,(255,255,0),(int(point[x]+random.randint(-2,2)),int(point[y]+random.randint(-2,2))),int(15-point[c]))
+            if(point[c] >= 1):
+                pygame.draw.circle(self.surface,(255,255,0),(int(point[x]+random.randint(-2,2)),int(point[y]+random.randint(-2,2))),int(12-point[c]))
             point[c]+=0.5
-            if(point[c] >= 15):
+            if(point[c] >= 12):
                 self.trail.remove(point)
         self.surface.blit(pygame.transform.rotate(self.sprite_missile,self.rotation),(self.x,self.y))
 
