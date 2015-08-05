@@ -34,12 +34,12 @@ class Player():
         self.missile = [200,200,40,25,0] #x,y,width,height and rotation(degrees)
         self.trail = []
         self.missiles = []
-        self.missiles.append(missile.Missile(100,100,self.surface,(0,0)))
         self.currentWeapon = "MISSILE"
+        self.currentState = "STILL"
 
     def loadSprites(self):
         self.sprite_still = self.addAnimation(self.rootFolder+"/STILL",self.sWidth,self.sHeight)
-        self.sprite_missile = pygame.transform.flip(pygame.transform.smoothscale(pygame.image.load("images/missile.png").convert_alpha(),(40,25)),True,False)
+        self.sprite_walk = self.addAnimation(self.rootFolder+"/WALK",self.sWidth,self.sHeight)
 
     def addAnimation(self,rootFolder,width,height,flip = (False,False)):
         if(rootFolder.endswith('/')):
@@ -68,8 +68,12 @@ class Player():
         numFrames = len(sprite)
         for i in range(0,numFrames*delay):
             if((self.deltaAnim+i)%(numFrames*delay) == 0):
-                self.surface.blit(pygame.transform.flip(sprite[int(math.ceil((i+1)/delay)-1)],flip[0],flip[1]),(int(x*self.camera.zoom+self.camera.x),int(y*self.camera.zoom+self.camera.y)))
-
+                try:
+                    self.surface.blit(pygame.transform.flip(sprite[len(sprite)-int(math.ceil((i+1)/delay)-1)-1],flip[0],flip[1]),(int(x*self.camera.zoom+self.camera.x),int(y*self.camera.zoom+self.camera.y)))
+                    print(len(sprite)-int(math.ceil((i+1)/delay)-1))
+                except:
+                    self.surface.blit(pygame.transform.flip(sprite[0],flip[0],flip[1]),(int(x*self.camera.zoom+self.camera.x),int(y*self.camera.zoom+self.camera.y)))
+                    
     def setSurface(self,surface):
         self.surface = surface
 
@@ -87,22 +91,32 @@ class Player():
         if(direction == "LEFT" and self.checkSpace(self.x-self.velX,self.y,direction)[0]):
             self.x -= self.velX
             self.xDir = "LEFT"
+            self.currentState = "WALK"
         elif(direction == "LEFT"):
             self.x -= self.checkSpace(self.x-self.velX,self.y,"LEFT")[1]
-
+            self.currentState = "WALK"
+            
         if(direction == "RIGHT" and self.checkSpace(self.x+self.velX,self.y,direction)[0]):
             self.x += self.velX
             self.xDir = "RIGHT"
+            self.currentState = "WALK"
         elif(direction == "RIGHT"):
             self.x += self.checkSpace(self.x+self.velX,self.y,"RIGHT")[1]
+            self.currentState = "WALK"
 
     def draw(self):
         self.deltaAnim += 1
         pygame.draw.rect(self.surface,(0,0,255),(self.x+self.camera.x,self.y+self.camera.y,self.cWidth,self.cHeight))
         if(self.xDir == "LEFT"):
-            self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight))
+            if(self.currentState == "STILL"):
+                self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight))
+            elif(self.currentState == "WALK"):
+                self.playAnimation(self.sprite_walk,self.x,self.y+(self.cHeight-self.sHeight))
         elif(self.xDir == "RIGHT"):
-            self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
+            if(self.currentState == "STILL"):
+                self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
+            elif(self.currentState == "WALK"):
+                self.playAnimation(self.sprite_walk,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
         self.drawHUD()
         self.collisionDetection((self.x,self.y))
         for m in self.missiles:
@@ -283,4 +297,4 @@ class Player():
 
     def attack(self):
         if(self.currentWeapon == "MISSILE"):
-            self.missiles.append(missile.Missile(self.x+int(self.sWidth/2)+self.camera.x,self.y+int(self.sHeight/2)+self.camera.y,self.surface,(0,0)))
+            self.missiles.append(missile.Missile(self.x+int(self.sWidth/2)+self.camera.x,self.y+int(self.sHeight/2)+self.camera.y,self.surface,self.camera,(0,0)))
