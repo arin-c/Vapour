@@ -45,12 +45,15 @@ class Missile:
             print("not a valid directory: " + rootFolder)
             return None
 
-    def playAnimation(self,sprite,x,y,delay=3,flip=(False,False)):
+    def playAnimation(self,sprite,x,y,delay=1,flip=(False,False)):
         numFrames = len(sprite)
         for i in range(0,numFrames*delay):
             if((self.deltaAnim+i)%(numFrames*delay) == 0):
-                self.surface.blit(pygame.transform.flip(sprite[int(math.ceil((i+1)/delay)-1)],flip[0],flip[1]),(int(x*self.camera.zoom+self.camera.x),int(y*self.camera.zoom+self.camera.y)))
-                print(int(math.ceil((i+1)/delay)-1))
+                try:
+                    self.surface.blit(pygame.transform.flip(sprite[len(sprite)-int(math.ceil((i+1)/delay)-1)-1],flip[0],flip[1]),(int(x*self.camera.zoom+self.camera.x),int(y*self.camera.zoom+self.camera.y)))
+                    print(len(sprite)-int(math.ceil((i+1)/delay)-1))
+                except:
+                    pass
         
     def draw(self):
         if(not self.exploding):
@@ -60,7 +63,7 @@ class Missile:
             self.deltaE+=2
             #print(self.deltaAnim)
             self.deltaAnim +=1
-            if(self.deltaAnim >= 19):
+            if(self.deltaAnim >= 19*1):
                 self.deltaAnim = 0
                 self.dead = True
             #pygame.draw.circle(self.surface,(255,255,0),(int(self.x+self.width/2),int(self.y+self.height/2)),self.deltaE)
