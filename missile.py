@@ -8,7 +8,7 @@ class Missile:
         self.rotation = 0
         self.trackX, self.trackY = trackingPos
         self.trail = []
-        self.speed = 10
+        self.speed = 15
         self.width,self.height = (40,30)
         self.exploding = False
         self.deltaE = 0
