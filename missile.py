@@ -50,8 +50,9 @@ class Missile:
         for i in range(0,numFrames*delay):
             if((self.deltaAnim+i)%(numFrames*delay) == 0):
                 try:
-                    self.surface.blit(pygame.transform.flip(sprite[len(sprite)-int(math.ceil((i+1)/delay)-1)-1],flip[0],flip[1]),(int(x*self.camera.zoom+self.camera.x),int(y*self.camera.zoom+self.camera.y)))
-                    print(len(sprite)-int(math.ceil((i+1)/delay)-1))
+                    # self.surface.blit(pygame.transform.flip(sprite[len(sprite)-int(math.ceil((i+1)/delay)-1)-1],flip[0],flip[1]),(int(x*self.camera.zoom+self.camera.x),int(y*self.camera.zoom+self.camera.y)))
+                    self.surface.blit(pygame.transform.flip(sprite[len(sprite)-int(math.ceil((i+1)/delay)-1)-1],flip[0],flip[1]),(int(x*self.camera.zoom),int(y*self.camera.zoom)))
+                    # print(len(sprite)-int(math.ceil((i+1)/delay)-1))
                 except:
                     pass
         
