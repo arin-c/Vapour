@@ -39,7 +39,7 @@ class Player():
 
     def loadSprites(self):
         self.sprite_still = self.addAnimation(self.rootFolder+"/STILL",self.sWidth,self.sHeight)
-        self.sprite_walk = self.addAnimation(self.rootFolder+"/WALK",self.sWidth,self.sHeight)
+        self.sprite_walk = self.addAnimation(self.rootFolder+"/SwagWalk",self.sWidth,self.sHeight)
 
     def addAnimation(self,rootFolder,width,height,flip = (False,False)):
         if(rootFolder.endswith('/')):
@@ -106,7 +106,7 @@ class Player():
 
     def draw(self):
         self.deltaAnim += 1
-        pygame.draw.rect(self.surface,(0,0,255),(self.x+self.camera.x,self.y+self.camera.y,self.cWidth,self.cHeight))
+        # pygame.draw.rect(self.surface,(0,0,255),(self.x+self.camera.x,self.y+self.camera.y,self.cWidth,self.cHeight))
         if(self.xDir == "LEFT"):
             if(self.currentState == "STILL"):
                 self.playAnimation(self.sprite_still,self.x,self.y+(self.cHeight-self.sHeight))
