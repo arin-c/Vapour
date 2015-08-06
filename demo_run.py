@@ -20,6 +20,8 @@ def start(editingMode=False):
             pc.move("LEFT")
         elif(key[pygame.K_RIGHT]):
             pc.move("RIGHT")
+        elif(not key[pygame.K_SPACE]):
+            pc.currentState = "STILL"
         if(editingMode):
             if(key[pygame.K_e]):
                 lEditor.blockRotation+=5
@@ -46,7 +48,7 @@ def start(editingMode=False):
     if(hasattr(currentLevel,'background')):
         backgroundSurface.blit(currentLevel.background,(0,0))
     while(not quit):
-        clock.tick(45)
+        clock.tick(30)
         quit = handleEvents()
         if(editingMode):
             lEditor.update()
