@@ -121,7 +121,7 @@ class Missile:
         angle = 0
         angularVelocity = random.uniform(-0.1,0.1)
         color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
-        size = random.randint(2,5)
+        size = random.randint(7,16)
         duration = 20+random.randint(0,40)
         return particle.Particle(self.surface,texture,position,vel,angle,angularVelocity,color,size,duration)
 
