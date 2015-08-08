@@ -1,4 +1,5 @@
-import os,sys,pygame,math,random
+import os,sys,pygame,math,random,particle
+from euclid import *
 
 class Missile:
     def __init__(self,startX,startY,passed_surface,passed_camera,trackingPos=(0,0)):
@@ -16,10 +17,13 @@ class Missile:
         self.deltaAnim = 0
         self.camera = passed_camera
         self.loadSprites()
+        self.particles = []
 
     def loadSprites(self):
         self.sprite_missile = pygame.transform.flip(pygame.transform.smoothscale(pygame.image.load("images/missile.png").convert_alpha(),(self.width,self.height)),True,False)
         self.explodingAnim = self.addAnimation("images/missile",100,100)
+        self.particle_fire = pygame.image.load("images/particle/fire.png")
+        self.particle_smallfire = pygame.image.load("images/particle/small_fire.png")
 
     def addAnimation(self,rootFolder,width,height,flip = (False,False)):
         if(rootFolder.endswith('/')):
@@ -57,32 +61,68 @@ class Missile:
                     pass
         
     def draw(self):
+        self.drawParticles()
         if(not self.exploding):
-            self.drawTrail()
+            #self.drawTrail()
             self.surface.blit(pygame.transform.rotate(self.sprite_missile,self.rotation),(self.x,self.y))
         elif(self.exploding):
             self.deltaE+=2
             #print(self.deltaAnim)
             self.deltaAnim +=1
             if(self.deltaAnim >= 19*1):
-                self.deltaAnim = 0
-                self.dead = True
+                self.deltaAnim = 20
+                #self.dead = True
             #pygame.draw.circle(self.surface,(255,255,0),(int(self.x+self.width/2),int(self.y+self.height/2)),self.deltaE)
-            self.playAnimation(self.explodingAnim,int(self.x-self.width/2),int(self.y-self.height/2))
+            else:
+                self.playAnimation(self.explodingAnim,int(self.x-self.width/2),int(self.y-self.height/2))
 
     def drawTrail(self):
         x,y,c = (0,1,2)
         for point in self.trail:
             if(point[c] >= 1):
                 pygame.draw.circle(self.surface,(255,255,0),(int(point[x]+random.randint(-2,2)),int(point[y]+random.randint(-2,2))),int(12-point[c]))
+                #self.surface.blit(pygame.transform.scale(self.particle_fire,(6*int(12-point[c]),6*int(12-point[c]))),(point[x],point[y]))
             point[c]+=0.5
             if(point[c] >= 12):
                 self.trail.remove(point)
-        
+
     def update(self):
         if(not self.exploding):
             self.track()
             self.trail.append([self.x+int(self.width/2),self.y+int(self.height/2),0])
+        self.updateParticles()
+
+    def drawParticles(self):
+        for p in self.particles:
+            p.draw()
+
+    def updateParticles(self):
+        if(not self.exploding):
+            pps = 10 #particles per second
+            for i in range(0,10):
+                self.particles.append(self.createParticle())
+        for p in self.particles:
+            p.update()
+            if(p.duration <= 0):
+                self.particles.remove(p)
+        if(self.exploding and len(self.particles) == 0):
+            self.dead = True
+
+    def createParticle(self):
+        ePos = (int(self.x+(self.width/2)),int(self.y+self.height/2))
+        ri = random.randint(0,1)
+        if(ri == 0):
+            texture = self.particle_fire
+        elif(ri == 1):
+            texture = self.particle_smallfire
+        position = Vector2(ePos[0],ePos[1])
+        vel = Vector2(random.uniform(-1,1),random.uniform(-1,1))
+        angle = 0
+        angularVelocity = random.uniform(-0.1,0.1)
+        color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
+        size = random.randint(2,5)
+        duration = 20+random.randint(0,40)
+        return particle.Particle(self.surface,texture,position,vel,angle,angularVelocity,color,size,duration)
 
     def track(m):
         diffX = m.trackX - m.x
