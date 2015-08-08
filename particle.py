@@ -4,7 +4,7 @@ from euclid import *
 class Particle():
     def __init__(self,surface,texture,position,velocity,angle,angularVelocity,color,size,duration):
         self.surface = surface
-        self.texture = pygame.transform.scale(texture,(3*size,3*size))
+        self.texture = pygame.transform.scale(texture,(size,size))
         self.position = position
         self.velocity = velocity
         self.angle = angle
@@ -16,7 +16,7 @@ class Particle():
     def update(self):
         self.duration -= 1
         self.position= self.position + self.velocity
-        self.angle += self.angularVelocity
+        #self.angle += self.angularVelocity
 
     def draw(self):
         self.surface.blit(self.texture,(self.position.x,self.position.y))
