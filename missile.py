@@ -21,9 +21,10 @@ class Missile:
 
     def loadSprites(self):
         self.sprite_missile = pygame.transform.flip(pygame.transform.smoothscale(pygame.image.load("images/missile.png").convert_alpha(),(self.width,self.height)),True,False)
-        self.explodingAnim = self.addAnimation("images/missile",100,100)
+        self.explodingAnim = self.addAnimation("images/missile",150,150)
         self.particle_fire = pygame.image.load("images/particle/fire.png")
         self.particle_smallfire = pygame.image.load("images/particle/small_fire.png")
+        self.particle_box = pygame.image.load("images/particle/box.png")
 
     def addAnimation(self,rootFolder,width,height,flip = (False,False)):
         if(rootFolder.endswith('/')):
@@ -49,7 +50,7 @@ class Missile:
             print("not a valid directory: " + rootFolder)
             return None
 
-    def playAnimation(self,sprite,x,y,delay=1,flip=(False,False)):
+    def playAnimation(self,sprite,x,y,delay=2,flip=(False,False)):
         numFrames = len(sprite)
         for i in range(0,numFrames*delay):
             if((self.deltaAnim+i)%(numFrames*delay) == 0):
@@ -69,12 +70,12 @@ class Missile:
             self.deltaE+=2
             #print(self.deltaAnim)
             self.deltaAnim +=1
-            if(self.deltaAnim >= 19*1):
-                self.deltaAnim = 20
+            if(self.deltaAnim >= len(self.explodingAnim)*2):
+                self.deltaAnim = len(self.explodingAnim)*2
                 #self.dead = True
             #pygame.draw.circle(self.surface,(255,255,0),(int(self.x+self.width/2),int(self.y+self.height/2)),self.deltaE)
             else:
-                self.playAnimation(self.explodingAnim,int(self.x-self.width/2),int(self.y-self.height/2))
+                self.playAnimation(self.explodingAnim,int(self.x-75),int(self.y-75))
 
     def drawTrail(self):
         x,y,c = (0,1,2)
