@@ -19,5 +19,5 @@ class Particle():
         #self.angle += self.angularVelocity
 
     def draw(self):
-        self.surface.blit(self.texture,(self.position.x,self.position.y))
+        self.surface.blit(self.texture,(self.position.x,self.position.y),special_flags = pygame.BLEND_RGBA_ADD)
         #pygame.draw.circle(self.surface,self.color,(int(self.position.x),int(self.position.y)),self.size)
