@@ -36,6 +36,7 @@ class Player():
         self.missiles = []
         self.currentWeapon = "MISSILE"
         self.currentState = "STILL"
+        self.pSurface = pygame.Surface((500,500),flags = pygame.SRCALPHA)
 
     def loadSprites(self):
         self.sprite_still = self.addAnimation(self.rootFolder+"/STILL",self.sWidth,self.sHeight)
@@ -119,6 +120,10 @@ class Player():
                 self.playAnimation(self.sprite_walk,self.x,self.y+(self.cHeight-self.sHeight),3,(True,False))
         self.drawHUD()
         self.collisionDetection((self.x,self.y))
+        self.pSurface.fill(pygame.Color(0,0,0,0))
+        for m in self.missiles:
+            m.drawParticles()
+            self.surface.blit(self.pSurface,(0,0))
         for m in self.missiles:
             m.draw()
 
@@ -297,4 +302,4 @@ class Player():
 
     def attack(self):
         if(self.currentWeapon == "MISSILE"):
-            self.missiles.append(missile.Missile(self.x+int(self.sWidth/2)+self.camera.x,self.y+int(self.sHeight/2)+self.camera.y,self.surface,self.camera,(0,0)))
+            self.missiles.append(missile.Missile(self.x+int(self.sWidth/2)+self.camera.x,self.y+int(self.sHeight/2)+self.camera.y,self.surface,self.pSurface,self.camera,(0,0)))
