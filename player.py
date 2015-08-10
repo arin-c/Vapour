@@ -186,7 +186,8 @@ class Player():
         self.surface.blit(self.hudFont.render("lvl " + str(self.xpLevel),1,(0,0,0)),(10,43))
         self.surface.blit(self.hudFont.render("Vapour",0,(0,0,0)),(45,5))
 
-    def collisionDetection(self,(px,py)):
+    def collisionDetection(self,pPos):
+        px,py = pPos
         pr = ((self.x,self.y),(self.x+self.cWidth,self.y),(self.x,self.y+self.cHeight),(self.x+self.cWidth,self.y+self.cHeight))
         tl,tr,bl,br,cx,cy = (0,1,2,3,4,5)
         x,y=0,1
@@ -231,7 +232,8 @@ class Player():
                     print("no collision")
         return collision
 
-    def checkAxis(self,block,axis,(px,py)):
+    def checkAxis(self,block,axis,pPos):
+        px,py = pPos
         tl,tr,bl,br,cx,cy = (0,1,2,3,4,5)
         x,y = (0,1)
         origin = (block[5][cx],block[5][cy])
