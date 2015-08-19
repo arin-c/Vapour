@@ -63,7 +63,7 @@ class Missile:
     def draw(self):
         self.drawParticles()
         if(not self.exploding):
-            self.surface.blit(pygame.transform.rotate(self.sprite_missile,self.rotation),(self.x,self.y))
+            self.surface.blit(pygame.transform.rotate(self.sprite_missile,-self.rotation),(self.x,self.y))
         elif(self.exploding):
             self.deltaE+=2
             self.deltaAnim +=1
@@ -115,10 +115,36 @@ class Missile:
     def track(m):
         diffX = m.trackX - m.x
         diffY = m.trackY - m.y
-        m.rotation = -math.degrees(math.atan2(diffY,diffX))
+        ease = 10
+        rotation = math.degrees(math.atan2(diffY,diffX))
+        if(math.fabs(rotation-m.rotation) > 180):
+            if(rotation > 0 and m.rotation < 0):
+                print("0 before mr = %i r = %i"%(m.rotation,rotation))
+                m.rotation -= (360 - rotation + m.rotation)/ease
+                #if(rotation > 0):
+                #    m.rotation += 5
+                if(m.rotation <= -180):
+                    m.rotation += 360
+                print("0 after mr = %i"%(m.rotation))
+            elif(m.rotation > 0 and rotation < 0):
+                print("1 before mr = %i r = %i"%(m.rotation,rotation))
+                #if(rotation < 0):
+                #    m.rotation -= 10
+                m.rotation += (360 +rotation - m.rotation)/ease
+                if(m.rotation >= 180):
+                    m.rotation -= 360
+                print("1 after mr = %i"%m.rotation)
+        elif(rotation < m.rotation):
+            print("2 before mr = %i r = %i"%(m.rotation,rotation))
+            m.rotation -= math.fabs(m.rotation - rotation)/ease
+            print("2 after mr = %i"%m.rotation)
+        else:
+            print("3 before mr = %i r = %i"%(m.rotation,rotation))
+            m.rotation += math.fabs(rotation - m.rotation)/ease
+            print("3 after mr = %i"%(m.rotation))
         velX = m.speed*((90-math.fabs(m.rotation))/90)
         velY = 0
-        if(-m.rotation < 0):
+        if(m.rotation < 0):
             velY = -m.speed+math.fabs(velX)
         else:
             velY = m.speed-math.fabs(velX)
