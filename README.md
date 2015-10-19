@@ -1,6 +1,6 @@
 # Vapour
 
-Platformer RPG made in Python 3.2 and Pygame.
+Platformer RPG made in Python 3.2 and Pygame. (Needs pygame to run so make sure you install it)
 
 ![Alt text](screenshot.png "Missile with additive particle effects")
 
@@ -53,3 +53,8 @@ Files are loaded in '**.txt**' file format.
     %#######################^                                                                          
     %#######################^
     %#######################^
+
+Creators:
+- @On2iTAaryn   (Programmer)
+- @Viliami      (Programmer)
+- @Pithless     (Art)
