@@ -66,4 +66,4 @@ def start(editingMode=False):
     pygame.quit()
 
 if(__name__ == "__main__"):
-    start(True)
+    start(True) #true = level editing mode enabled
