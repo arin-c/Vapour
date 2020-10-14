@@ -4,19 +4,19 @@ Platformer RPG made in Python 3.2 and Pygame. (Needs pygame to run so make sure 
 
 ![Alt text](screenshot.png "Missile with additive particle effects")
 
-###Controls in normal mode
+### Controls in normal mode
 - Arrow keys for movement
 - Space to attack
 - Esc to quit
 
-###Controls in level editor mode
+### Controls in level editor mode
 
 - 'g' to toggle grid
 - 'e' to rotate block clockwise
 - 'q' to rotate block counter-clockwise
 - mouse to select blocks at the bottom
 
-###Level file formatting
+### Level file formatting
 Files are loaded in '**.txt**' file format.
 
 |Character          |Type           |
@@ -29,7 +29,7 @@ Files are loaded in '**.txt**' file format.
 |'**^**'            |Right block    |
 |'**%**'            |Left block     |
 
-###Example of level file used in demo
+### Example of level file used in demo
 
     @$!                 @$$$$!                                                                         
     %#^                 %####^                                                                         
@@ -54,7 +54,7 @@ Files are loaded in '**.txt**' file format.
     %#######################^
     %#######################^
 
-###Creators:
+### Creators:
 - @On2iTAaryn   (Programmer)
 - @Viliami      (Programmer)
-- @Pithless     (Art)
+- @Cricedraws   (Art)
